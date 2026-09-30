@@ -1,0 +1,768 @@
+<!doctype html>
+<html
+  lang="fr"
+  data-resolution="portrait"
+  data-composition-variables='[{"id":"fin","type":"enum","label":"Fin","default":"reseaux","options":[{"value":"reseaux","label":"Réseaux"},{"value":"linkedin","label":"LinkedIn"}]}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Archivo";
+        src: url("assets/fonts/Archivo-latin-var.woff2") format("woff2");
+        font-weight: 100 900;
+        font-stretch: 62% 125%;
+        font-style: normal;
+      }
+      :root {
+        --ink: #241e1b;
+        --bordeaux: #6e1a2c;
+        --ocre: #c8862a;
+        --white: #ffffff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #241e1b;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--ink);
+        font-family: "Archivo", sans-serif;
+        font-stretch: 85%;
+        color: var(--white);
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+      #bg-ink {
+        background: var(--ink);
+      }
+      #bg-bordeaux {
+        background: var(--bordeaux);
+      }
+      /* caméra : zoom lent de chaque scène, centré sur la zone sûre */
+      #cam {
+        position: absolute;
+        inset: 0;
+        transform-origin: 510px 905px;
+      }
+
+      /* cartons */
+      .card {
+        position: absolute;
+        left: 100px;
+        font-weight: 800;
+        color: var(--white);
+      }
+      .card .line {
+        display: block;
+        white-space: nowrap;
+        letter-spacing: -0.02em;
+        opacity: 0;
+      }
+      .card.title .line {
+        letter-spacing: -0.03em;
+      }
+      /* le mot clé arrive avec la ponctuation qui le suit ; seul le mot passe en ocre */
+      .card .kw {
+        display: inline-block;
+        opacity: 0;
+        transform-origin: 50% 65%;
+      }
+      .card .ko {
+        color: var(--ocre);
+      }
+
+      /* feuille */
+      #sheetPos {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 820px;
+        height: 760px;
+      }
+      #sheetDrift {
+        position: absolute;
+        inset: 0;
+      }
+      #sheet {
+        position: absolute;
+        inset: 0;
+        background: var(--white);
+        box-shadow: 0 34px 70px rgba(36, 30, 27, 0.38);
+      }
+      .abs {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .st {
+        position: absolute;
+        font-weight: 500;
+        font-size: 48px;
+        line-height: 53px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .rule {
+        position: absolute;
+        left: 40px;
+        width: 740px;
+        height: 3px;
+        background: var(--ink);
+        transform-origin: 0 50%;
+      }
+      .rule.faint {
+        opacity: 0.25;
+      }
+      #vdiv {
+        position: absolute;
+        left: 499px;
+        top: 50px;
+        width: 3px;
+        height: 380px;
+        background: var(--ink);
+        transform-origin: 50% 0;
+      }
+      #hl {
+        position: absolute;
+        left: 36px;
+        top: 186px;
+        width: 748px;
+        height: 130px;
+        background: var(--ocre);
+        transform-origin: 0 50%;
+      }
+      #pen {
+        position: absolute;
+        left: -60px;
+        top: -260px;
+        width: 200px;
+        height: 280px;
+        transform-origin: 60px 260px;
+        opacity: 0;
+      }
+
+      /* frise des quatorze jours */
+      .tick {
+        position: absolute;
+        top: 1073px;
+        width: 12px;
+        height: 84px;
+        background: var(--white);
+        transform-origin: 50% 100%;
+      }
+
+      /* chronomètres */
+      .watch {
+        position: absolute;
+        width: 400px;
+        height: 510px;
+        opacity: 0;
+      }
+      .watch .wt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 400px;
+        text-align: center;
+        font-weight: 500;
+        font-size: 48px;
+        line-height: 53px;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        color: var(--white);
+      }
+      .watch svg {
+        position: absolute;
+        left: 0;
+        top: 70px;
+        overflow: visible;
+      }
+
+      /* phrases épinglées et questions posées au-dessus de la feuille */
+      .pin {
+        position: absolute;
+        left: 100px;
+        top: 224px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 52px;
+        letter-spacing: -0.01em;
+        color: var(--ocre);
+        white-space: nowrap;
+        opacity: 0;
+      }
+      .pin .bar {
+        display: block;
+        width: 6px;
+        height: 44px;
+        background: var(--ocre);
+      }
+      .dock {
+        position: absolute;
+        left: 100px;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 52px;
+        letter-spacing: -0.01em;
+        color: var(--white);
+        white-space: nowrap;
+        opacity: 0;
+        transform-origin: 0 50%;
+      }
+
+      /* barre de progression */
+      #progress {
+        position: absolute;
+        left: 60px;
+        top: 1576px;
+        width: 900px;
+        height: 14px;
+      }
+      .seg {
+        position: absolute;
+        top: 0;
+        height: 14px;
+        background: rgba(255, 255, 255, 0.22);
+        overflow: hidden;
+      }
+      .seg .fill {
+        position: absolute;
+        inset: 0;
+        background: var(--ocre);
+        transform-origin: 0 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="79.7"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg-ink" class="layer"></div>
+      <div id="bg-bordeaux" class="layer"></div>
+
+      <div id="cam">
+        <div id="frise"></div>
+
+        <div id="sheetPos" data-layout-allow-overflow>
+          <div id="sheetDrift">
+            <div id="sheet">
+              <div id="hl"></div>
+              <svg class="abs" width="820" height="760" viewBox="0 0 820 760">
+                <path
+                  id="hdr"
+                  d="M40 176 C 230 164, 520 186, 780 170"
+                  fill="none"
+                  stroke="#241E1B"
+                  stroke-width="5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="rule" id="r1" style="top: 322px"></div>
+              <div class="rule" id="r2" style="top: 425px"></div>
+              <div class="rule faint" id="r3" style="top: 520px"></div>
+              <div class="rule faint" id="r4" style="top: 615px"></div>
+              <div class="rule faint" id="r5" style="top: 710px"></div>
+              <div id="vdiv"></div>
+
+              <div class="st" id="t-col1" data-layout-allow-overlap style="left: 520px; top: 60px">Temps</div>
+              <div class="st" id="t-col2" data-layout-allow-overlap style="left: 520px; top: 113px">par semaine</div>
+              <div class="st" id="t-r1a" style="left: 60px; top: 196px">Comptes rendus</div>
+              <div class="st" id="t-r1b" style="left: 60px; top: 250px">de réunion</div>
+              <div class="st" id="t-r1h" style="left: 530px; top: 196px">… h</div>
+              <div class="st" id="t-r2a" style="left: 60px; top: 350px">Relances de devis</div>
+              <div class="st" id="t-r2h" style="left: 530px; top: 350px">… h</div>
+
+              <div class="st" id="g-a1" data-layout-allow-overlap style="left: 60px; top: 60px">Heures</div>
+              <div class="st" id="g-a2" data-layout-allow-overlap style="left: 60px; top: 113px">par semaine</div>
+              <div class="st" id="g-b1" data-layout-allow-overlap style="left: 430px; top: 60px">Si l’IA</div>
+              <div class="st" id="g-b2" data-layout-allow-overlap style="left: 430px; top: 113px">se trompe</div>
+
+              <div id="pen">
+                <svg width="200" height="280" viewBox="-60 -260 200 280">
+                  <g transform="rotate(18)">
+                    <g opacity="0.16" transform="translate(12 4)">
+                      <path d="M0 0 L-13 -62 L-13 -248 L13 -248 L13 -62 Z" fill="#241E1B" />
+                    </g>
+                    <path d="M0 0 L-8 -26 L8 -26 Z" fill="#241E1B" />
+                    <path d="M-8 -26 L8 -26 L13 -62 L-13 -62 Z" fill="#FFFFFF" stroke="#241E1B" stroke-width="3" stroke-linejoin="round" />
+                    <rect x="-13" y="-232" width="26" height="170" fill="#241E1B" />
+                    <rect x="4" y="-220" width="4" height="140" fill="#FFFFFF" opacity="0.35" />
+                    <rect x="-13" y="-248" width="26" height="16" fill="#FFFFFF" stroke="#241E1B" stroke-width="3" />
+                    <rect x="-21" y="-232" width="6" height="72" fill="#FFFFFF" stroke="#241E1B" stroke-width="2" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="watches"></div>
+        <div class="dock" id="q1" style="top: 298px">Combien d’heures par semaine elle coûte.</div>
+        <div class="dock" id="q2" style="top: 354px">Et ce qui se passe si l’IA se trompe.</div>
+        <div id="cards"></div>
+      </div>
+
+      <div class="pin" id="p1"><span class="bar"></span><span>Reste à choisir la bonne tâche…</span></div>
+      <div class="pin" id="p2"><span class="bar"></span><span>Il reste l’étape qui décide…</span></div>
+
+      <div id="progress"></div>
+    </div>
+
+    <script type="application/json" id="schedule">
+{"fps":30,"consts":{"LINE_STAGGER":0.08,"KW_GAP":0.12,"KW_STAGGER":0.07,"KW_READ":0.1,"LINE_READ":0.15,"SWAP_GAP":0.06666666666666667},"scenes":[{"id":1,"start":0,"cards":[{"size":100,"first":true,"lines":["Votre premier","projet IA commence","avec un [stylo]","et une [feuille]."],"text":"Votre premier projet IA commence avec un stylo et une feuille.","chars":62,"need":4.133,"tIn":0,"readable":0.45,"tOut":4.6333}],"end":4.7},{"id":2,"start":4.7,"cards":[{"size":74,"lines":["Voici comment un comité","de direction trouve","son premier cas d’usage IA","en [deux semaines]."],"text":"Voici comment un comité de direction trouve son premier cas d’usage IA en deux semaines.","chars":88,"need":5.867,"tIn":4.7,"readable":5.16,"tOut":11.0667}],"end":11.133333333333333},{"id":3,"start":11.133333333333333,"cards":[{"size":150,"lines":["[Première]","[semaine]."],"text":"Première semaine.","chars":17,"need":1.5,"tIn":11.1333,"readable":11.5033,"tOut":13.0667},{"size":74,"lines":["Chaque membre du Codir","note les tâches qu’il","[refait chaque semaine]."],"text":"Chaque membre du Codir note les tâches qu’il refait chaque semaine.","chars":67,"need":4.467,"tIn":13.1333,"readable":13.5133,"tOut":18.0333},{"size":74,"lines":["Les comptes rendus","de réunion,","les relances de devis."],"text":"Les comptes rendus de réunion, les relances de devis.","chars":53,"need":3.533,"tIn":18.1,"readable":18.41,"tOut":22},{"size":74,"lines":["Et à côté de chaque tâche,","le [temps] qu’elle lui prend."],"text":"Et à côté de chaque tâche, le temps qu’elle lui prend.","chars":54,"need":3.6,"tIn":22.0667,"readable":22.3667,"tOut":26}],"end":26.066666666666666},{"id":4,"start":26.066666666666666,"cards":[{"size":74,"lines":["Au bout de sept jours,","vous avez une liste."],"text":"Au bout de sept jours, vous avez une liste.","chars":43,"need":2.867,"tIn":26.0667,"readable":26.2967,"tOut":29.2},{"size":74,"lines":["Reste à choisir","[la bonne tâche], et c’est là","que tout se joue…"],"text":"Reste à choisir la bonne tâche, et c’est là que tout se joue…","chars":61,"need":4.067,"tIn":29.2667,"readable":29.6467,"tOut":33.7667}],"end":33.833333333333336},{"id":5,"start":33.833333333333336,"cards":[{"size":74,"lines":["Pour chaque tâche,","[deux questions]."],"text":"Pour chaque tâche, deux questions.","chars":34,"need":2.267,"tIn":33.8333,"readable":34.1333,"tOut":36.4333},{"size":74,"lines":["Combien d’[heures]","par semaine elle coûte."],"text":"Combien d’heures par semaine elle coûte.","chars":40,"need":2.667,"tIn":36.5,"readable":36.8,"tOut":39.5},{"size":74,"lines":["Et ce qui se passe","si l’IA [se trompe]."],"text":"Et ce qui se passe si l’IA se trompe.","chars":37,"need":2.467,"tIn":39.5667,"readable":39.8667,"tOut":42.3667},{"size":72,"lines":["Vous gardez celle qui prend","le plus de temps et dont","une erreur se rattrape","[en deux minutes]."],"text":"Vous gardez celle qui prend le plus de temps et dont une erreur se rattrape en deux minutes.","chars":92,"need":6.133,"tIn":42.4333,"readable":42.8933,"tOut":49.0667}],"end":49.13333333333333},{"id":6,"start":49.13333333333333,"cards":[{"size":74,"lines":["Vous tenez","votre cas d’usage."],"text":"Vous tenez votre cas d’usage.","chars":29,"need":1.933,"tIn":49.1333,"readable":49.3633,"tOut":51.3333},{"size":74,"lines":["Il reste l’étape qui décide","si l’outil servira","[encore dans trois mois]…"],"text":"Il reste l’étape qui décide si l’outil servira encore dans trois mois…","chars":70,"need":4.667,"tIn":51.4,"readable":51.78,"tOut":56.5}],"end":56.56666666666667},{"id":7,"start":56.56666666666667,"cards":[{"size":150,"lines":["[Deuxième]","[semaine]."],"text":"Deuxième semaine.","chars":17,"need":1.5,"tIn":56.5667,"readable":56.9367,"tOut":58.5},{"size":74,"lines":["La personne qui fait","cette tâche au quotidien","[teste l’outil elle-même]."],"text":"La personne qui fait cette tâche au quotidien teste l’outil elle-même.","chars":70,"need":4.667,"tIn":58.5667,"readable":58.9467,"tOut":63.6667},{"size":74,"lines":["Elle chronomètre la tâche","[à la main], puis","[avec l’outil]."],"text":"Elle chronomètre la tâche à la main, puis avec l’outil.","chars":55,"need":3.667,"tIn":63.7333,"readable":64.1833,"tOut":67.9},{"size":74,"lines":["Elle ramène ce [chiffre]","au Codir, et c’est lui","qui décide de la suite."],"text":"Elle ramène ce chiffre au Codir, et c’est lui qui décide de la suite.","chars":69,"need":4.6,"tIn":67.9667,"readable":68.3467,"tOut":73}],"end":73.06666666666666},{"id":8,"start":73.06666666666666,"cards":[{"size":74,"lines":["Je vous envoie la grille","de tri en deux questions."],"text":"Je vous envoie la grille de tri en deux questions.","chars":50,"need":3.333,"tIn":73.0667,"readable":73.2967,"tOut":76.6667},{"size":100,"cta":true,"lines":["Écrivez","[GRILLE]","en commentaire."],"text":"Écrivez GRILLE en commentaire.","chars":30,"need":2,"tIn":76.7333,"readable":77.1133,"tOut":79.7}],"end":79.7}],"duration":79.7}
+    </script>
+
+    <script>
+      (function () {
+        const SCHED = JSON.parse(document.getElementById("schedule").textContent);
+        const hf = window.__hyperframes;
+        const vars = hf && typeof hf.getVariables === "function" ? hf.getVariables() : {};
+        const FIN = vars && vars.fin === "linkedin" ? "linkedin" : "reseaux";
+        const C = SCHED.consts;
+        const SC = SCHED.scenes;
+        const END = SCHED.duration;
+        const $ = (id) => document.getElementById(id);
+
+        const tl = gsap.timeline({ paused: true });
+        // Toutes les animations passent par des fromTo explicites : rendu identique quel que soit l'ordre de lecture.
+        const K = (el, t, d, from, to, ease) =>
+          tl.fromTo(el, from, Object.assign({}, to, { duration: d, ease: ease || "none", immediateRender: false }), t);
+
+        // Canal d'état : chaque appel part de l'état précédent de l'élément.
+        const state = new Map();
+        const init = (el, st) => {
+          state.set(el, Object.assign({}, st));
+          gsap.set(el, st);
+        };
+        const move = (el, t, d, to, ease) => {
+          const from = Object.assign({}, state.get(el));
+          const next = Object.assign({}, from, to);
+          K(el, t, d, from, next, ease);
+          state.set(el, next);
+        };
+
+        const scene = (id) => SC[id - 1];
+
+        /* ---------- cartons ---------- */
+        // zone verticale de chaque scène : [haut, bas] en pixels
+        const ZONE = { 1: [880, 1330], 2: [657, 983], 3: [1180, 1540], 4: [1004, 1540], 5: [1130, 1540], 6: [1032, 1540], 7: [880, 1540], 8: [930, 1540] };
+        const lineHeight = (size) => (size >= 140 ? size : size * 1.1);
+        const html = (s) => s.replace(/\[([^\]]+)\]([.,…]?)/g, '<span class="kw"><span class="ko">$1</span>$2</span>');
+        const cardsEl = $("cards");
+
+        function buildCard(lines, sizes, top, isTitle) {
+          const el = document.createElement("div");
+          el.className = "card" + (isTitle ? " title" : "");
+          el.style.top = top + "px";
+          lines.forEach((l, i) => {
+            const ln = document.createElement("div");
+            ln.className = "line";
+            ln.style.fontSize = sizes[i] + "px";
+            ln.style.lineHeight = lineHeight(sizes[i]) + "px";
+            ln.innerHTML = html(l);
+            // un mot clé en début de ligne grandit vers la droite : il reste dans la zone sûre
+            if (l.startsWith("[")) ln.querySelector(".kw").style.transformOrigin = "0% 65%";
+            el.appendChild(ln);
+          });
+          cardsEl.appendChild(el);
+          return { el, lines: [...el.querySelectorAll(".line")], kws: [...el.querySelectorAll(".kw")] };
+        }
+
+        function enter(c, tIn, first) {
+          const skip = first ? 1 : 0;
+          c.lines.forEach((ln, i) => {
+            if (first && i === 0) {
+              gsap.set(ln, { opacity: 1 });
+              K(ln, 0, 0.5, { y: 14, opacity: 1 }, { y: 0, opacity: 1 }, "power2.out");
+              return;
+            }
+            const st = tIn + (i - skip) * C.LINE_STAGGER;
+            K(ln, st, 0.45, { y: 56 }, { y: 0 }, "back.out(1.7)");
+            K(ln, st, C.LINE_READ, { opacity: 0 }, { opacity: 1 }, "power1.out");
+          });
+          const kwStart = tIn + (c.lines.length - 1 - skip) * C.LINE_STAGGER + C.KW_GAP;
+          c.kws.forEach((kw, j) => {
+            const s = kwStart + j * C.KW_STAGGER;
+            K(kw, s, 0.38, { scale: 0.75 }, { scale: 1 }, "back.out(1.7)"); // rebond limité à 2,5 % : les espaces voisins restent intacts
+            K(kw, s, C.KW_READ, { opacity: 0 }, { opacity: 1 }, "none");
+          });
+          return kwStart;
+        }
+
+        // Sortie en deux images : le carton a disparu quand le suivant commence à entrer.
+        function exit(c, tOut) {
+          c.lines.forEach((ln) => {
+            K(ln, tOut, 0.12, { y: 0 }, { y: -30 }, "power2.in");
+            K(ln, tOut, 0.06, { opacity: 1 }, { opacity: 0 }, "none");
+          });
+        }
+
+        const kwTimes = {}; // instants d'arrivée des mots clés, par scène et carton
+        SC.forEach((s) => {
+          const [za, zb] = ZONE[s.id];
+          const center = (za + zb) / 2;
+          s.cards.forEach((cd, ci) => {
+            if (s.id === 8 && FIN === "linkedin") return; // fin linkedin construite plus bas
+            const sizes = cd.cta ? [100, 230, 100] : cd.lines.map(() => cd.size);
+            const h = sizes.reduce((a, z) => a + lineHeight(z), 0);
+            const c = buildCard(cd.lines, sizes, Math.round(center - h / 2), cd.size >= 140);
+            kwTimes[s.id + "-" + ci] = enter(c, cd.tIn, !!cd.first);
+            const isFinal = s.id === 8 && ci === s.cards.length - 1;
+            if (!isFinal) exit(c, cd.tOut);
+          });
+        });
+
+        // Fin linkedin : même minutage, la signature se complète et reste affichée.
+        if (FIN === "linkedin") {
+          const s8 = scene(8);
+          const [za, zb] = ZONE[8];
+          const hName = lineHeight(110);
+          const hRole = lineHeight(74);
+          const top = Math.round((za + zb) / 2 - (hName + hRole) / 2);
+          const name = buildCard(["Antoine Contino"], [110], top, false);
+          const role = buildCard(["formateur IA"], [74], top + Math.round(hName), false);
+          enter(name, s8.cards[0].tIn, false);
+          enter(role, s8.cards[1].tIn, false);
+        }
+
+        /* ---------- caméra : zoom lent jusqu'à la sortie de chaque scène ---------- */
+        const cam = $("cam");
+        init(cam, { scale: 1 });
+        SC.forEach((s, i) => {
+          const z0 = i === 0 ? 0 : s.start + 0.35;
+          move(cam, z0, s.end - z0, { scale: 1.015 }, "none");
+          if (i < SC.length - 1) move(cam, s.end, 0.35, { scale: 1 }, "power2.out");
+        });
+
+        /* ---------- fonds ---------- */
+        const bgB = $("bg-bordeaux");
+        gsap.set(bgB, { clipPath: "inset(0% 0% 0% 0%)" });
+        const t12 = scene(2).start;
+        const t78 = scene(8).start;
+        K(bgB, t12 - 0.1, 0.45, { clipPath: "inset(0% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 100% 0%)" }, "power3.inOut");
+        K(bgB, t78 - 0.12, 0.45, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" }, "power3.inOut");
+
+        /* ---------- barre de progression ---------- */
+        const prog = $("progress");
+        const GAP = 8;
+        const usable = 900 - GAP * (SC.length - 1);
+        let px = 0;
+        SC.forEach((s) => {
+          const w = (usable * (s.end - s.start)) / END;
+          const seg = document.createElement("div");
+          seg.className = "seg";
+          seg.style.left = px.toFixed(2) + "px";
+          seg.style.width = w.toFixed(2) + "px";
+          const fill = document.createElement("div");
+          fill.className = "fill";
+          seg.appendChild(fill);
+          prog.appendChild(seg);
+          gsap.set(fill, { scaleX: 0 });
+          K(fill, s.start, s.end - s.start, { scaleX: 0 }, { scaleX: 1 }, "none");
+          px += w + GAP;
+        });
+
+        /* ---------- feuille ---------- */
+        const sheetPos = $("sheetPos");
+        const drift = $("sheetDrift");
+        const P = (cx, cy, scale, rotation, opacity) => ({ x: cx - 410, y: cy - 380, scale, rotation, opacity: opacity === undefined ? 1 : opacity });
+        gsap.set(sheetPos, { transformOrigin: "50% 50%" });
+        gsap.set(drift, { transformOrigin: "50% 50%" });
+
+        const s3 = scene(3), s4 = scene(4), s5 = scene(5), s6 = scene(6), s7 = scene(7), s8 = scene(8);
+
+        // Scène 1 : la feuille est déjà dans le cadre à la première image et finit d'entrer en tournant.
+        init(sheetPos, P(548, 590, 0.6, -11));
+        move(sheetPos, 0, 1.0, P(510, 560, 0.66, -3), "back.out(1.6)");
+        // Transition 1 → 2 : la feuille s'envole avec le fond bordeaux.
+        move(sheetPos, t12 - 0.15, 0.45, P(510, -620, 0.66, -16, 1), "power3.in");
+        K(drift, t12 - 0.15, 0.3, { opacity: 1 }, { opacity: 0 }, "power1.out");
+        K(drift, s3.start - 0.12, 0.01, { opacity: 0 }, { opacity: 1 }, "none");
+        // Transition 2 → 3 : elle retombe en grand.
+        move(sheetPos, s3.start - 0.12, 0.01, P(510, 510, 1, 8, 0), "none");
+        move(sheetPos, s3.start + 0.05, 0.7, P(510, 760, 1, 0, 1), "back.out(1.25)");
+        // Transition 3 → 4 : recul de caméra.
+        move(sheetPos, s4.start - 0.05, 0.55, P(510, 607.2, 0.94, 0), "back.out(1.6)");
+        // Transition 4 → 5 : la feuille descend sous les questions.
+        move(sheetPos, s5.start - 0.05, 0.6, P(510, 766.8, 0.86, 0), "back.out(1.3)");
+        // Transition 5 → 6 : retour au centre, lentement.
+        move(sheetPos, s6.start - 0.05, 0.95, P(510, 626.8, 0.96, 0), "power2.inOut");
+        // Transition 6 → 7 : sortie vers la gauche.
+        move(sheetPos, s7.start - 0.12, 0.36, P(-420, 626.8, 0.96, -6, 1), "power3.in");
+        K(drift, s7.start - 0.12, 0.2, { opacity: 1 }, { opacity: 0 }, "power1.out");
+        K(drift, s8.start, 0.01, { opacity: 0 }, { opacity: 1 }, "none");
+        // Transition 7 → 8 : retour sur le bordeaux.
+        move(sheetPos, s8.start - 0.02, 0.01, P(510, 420, 0.86, 7, 0), "none");
+        move(sheetPos, s8.start + 0.1, 0.65, P(510, 566.8, 0.86, -1.5, 1), "back.out(1.3)");
+
+        // Dérive lente de la feuille, remise à zéro pendant chaque transition.
+        init(drift, { y: 0, rotation: 0 });
+        move(drift, 1.0, t12 - 1.15, { rotation: -1.2 }, "sine.inOut");
+        move(drift, s3.start - 0.12, 0.01, { rotation: 0 }, "none");
+        move(drift, s3.start + 0.6, s4.start - s3.start - 0.65, { y: -12 }, "sine.inOut");
+        move(drift, s4.start - 0.05, 0.5, { y: 0 }, "power2.out");
+        move(drift, s4.start + 0.5, s5.start - s4.start - 0.55, { y: -10 }, "sine.inOut");
+        move(drift, s5.start - 0.05, 0.55, { y: 0 }, "power2.out");
+        move(drift, s5.start + 0.6, s6.start - s5.start - 0.65, { y: -10 }, "sine.inOut");
+        move(drift, s6.start - 0.05, 0.9, { y: 0 }, "power2.inOut");
+        move(drift, s6.start + 0.85, s7.start - s6.start - 0.97, { y: -16, rotation: 1.4 }, "sine.inOut");
+        move(drift, s7.start + 0.4, 0.01, { y: 0, rotation: 0 }, "none");
+        move(drift, s8.start + 0.65, END - s8.start - 0.65, { y: -8, rotation: -0.6 }, "sine.inOut");
+
+        // Éléments écrits : révélés de gauche à droite comme au stylo.
+        const HIDE = "inset(-25% 100% -25% 0%)";
+        const SHOW = "inset(-25% 0% -25% 0%)";
+        ["t-col1", "t-col2", "t-r1a", "t-r1b", "t-r1h", "t-r2a", "t-r2h", "g-a1", "g-a2", "g-b1", "g-b2"].forEach((id) =>
+          gsap.set($(id), { clipPath: HIDE })
+        );
+        const reveal = (id, t, d) => K($(id), t, d, { clipPath: HIDE }, { clipPath: SHOW }, "none");
+
+        // Trait d'en-tête tracé par le stylo à la scène 1.
+        const hdr = $("hdr");
+        const hdrLen = hdr.getTotalLength();
+        gsap.set(hdr, { strokeDasharray: hdrLen, strokeDashoffset: hdrLen, opacity: 0 });
+        K(hdr, 0.99, 0.01, { opacity: 0 }, { opacity: 1 }, "none"); // évite le point de l'extrémité arrondie avant le tracé
+
+        // Filets et séparateur.
+        ["r1", "r2", "r3", "r4", "r5"].forEach((id) => gsap.set($(id), { scaleX: 0 }));
+        gsap.set($("vdiv"), { scaleY: 0 });
+        gsap.set($("hl"), { scaleX: 0 });
+
+        /* ---------- stylo ---------- */
+        const pen = $("pen");
+        const pst = { x: 720, y: 120, w: 0, n: 1 };
+        const applyPen = () => {
+          const wig = Math.sin(pst.w * Math.PI * 2 * pst.n);
+          gsap.set(pen, { x: pst.x, y: pst.y + wig * 4, rotation: wig * 2 });
+        };
+        let pcur = { x: 720, y: 120 };
+        const penMove = (t, d, x, y, ease) => {
+          tl.fromTo(pst, { x: pcur.x, y: pcur.y, w: 0, n: 1 }, { x, y, w: 0, n: 1, duration: d, ease: ease || "power2.inOut", immediateRender: false, onUpdate: applyPen }, t);
+          pcur = { x, y };
+        };
+        const penWrite = (id, t, d, width) => {
+          const el = $(id);
+          const x0 = parseFloat(el.style.left);
+          const y = parseFloat(el.style.top) + 44;
+          reveal(id, t, d);
+          const n = Math.max(2, Math.round(el.textContent.length * 0.8));
+          tl.fromTo(pst, { x: x0, y, w: 0, n }, { x: x0 + width, y, w: 1, n, duration: d, ease: "none", immediateRender: false, onUpdate: applyPen }, t);
+          pcur = { x: x0 + width, y };
+        };
+        const penShow = (t, d, on) => K(pen, t, d, { opacity: on ? 0 : 1 }, { opacity: on ? 1 : 0 }, "power1.out");
+        gsap.set(pen, { x: pst.x, y: pst.y });
+
+        // Scène 1 : le stylo arrive et trace le trait.
+        penShow(0.45, 0.2, true);
+        penMove(0.45, 0.55, 40, 176, "power2.out");
+        const hp = { p: 0 };
+        K(hdr, 1.0, 1.1, { strokeDashoffset: hdrLen }, { strokeDashoffset: 0 }, "power1.inOut");
+        tl.fromTo(
+          hp,
+          { p: 0 },
+          {
+            p: 1,
+            duration: 1.1,
+            ease: "power1.inOut",
+            immediateRender: false,
+            onUpdate: () => {
+              const pt = hdr.getPointAtLength(hp.p * hdrLen);
+              gsap.set(pen, { x: pt.x, y: pt.y, rotation: 0 });
+            },
+          },
+          1.0
+        );
+        pcur = { x: 780, y: 170 };
+        penMove(2.25, 0.6, 740, 130, "power2.inOut");
+        penShow(2.5, 0.3, false);
+
+        // Scène 3 : le tableau se dessine, puis la liste s'écrit au fil des cartons.
+        const c32 = s3.cards[1].tIn, c33 = s3.cards[2].tIn, c34 = s3.cards[3].tIn;
+        K($("vdiv"), c32 + 0.3, 0.5, { scaleY: 0 }, { scaleY: 1 }, "power2.out");
+        K($("r1"), c32 + 0.4, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power2.out");
+        K($("r2"), c32 + 0.52, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power2.out");
+        pcur = { x: 700, y: 330 };
+        penShow(c32 + 0.45, 0.2, true);
+        penMove(c32 + 0.45, 0.6, 520, 104, "power2.out");
+        penWrite("t-col1", c32 + 1.1, 0.5, 127);
+        penMove(c32 + 1.6, 0.2, 520, 157);
+        penWrite("t-col2", c32 + 1.8, 0.8, 227);
+        penMove(c32 + 2.6, 0.5, 400, 520);
+
+        penMove(c33 + 0.05, 0.35, 60, 240);
+        penWrite("t-r1a", c33 + 0.4, 0.85, 307);
+        penMove(c33 + 1.25, 0.2, 60, 294);
+        penWrite("t-r1b", c33 + 1.45, 0.55, 196);
+        penMove(c33 + 2.0, 0.25, 60, 394);
+        penWrite("t-r2a", c33 + 2.25, 0.9, 337);
+        penMove(c33 + 3.2, 0.4, 430, 470);
+
+        penMove(c34 + 0.25, 0.3, 530, 240);
+        penWrite("t-r1h", c34 + 0.55, 0.3, 68);
+        penMove(c34 + 0.85, 0.25, 530, 394);
+        penWrite("t-r2h", c34 + 1.1, 0.3, 68);
+        penMove(c34 + 1.45, 0.5, 700, 470);
+
+        // Scène 4 : des lignes vides s'ajoutent, puis le stylo s'arrête.
+        const c42 = s4.cards[1].tIn;
+        K($("r3"), c42 + 0.45, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power2.out");
+        K($("r4"), c42 + 0.7, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power2.out");
+        K($("r5"), c42 + 0.95, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power2.out");
+        K($("vdiv"), c42 + 0.45, 0.8, { height: 380 }, { height: 665 }, "power2.inOut");
+        penMove(c42 + 1.25, 0.5, 64, 474);
+        penMove(c42 + 1.75, 0.2, 72, 464, "sine.inOut");
+        penMove(c42 + 1.95, 0.25, 66, 474, "sine.inOut");
+        // Transition 4 → 5 : le stylo quitte la feuille.
+        penMove(s5.start - 0.03, 0.4, 760, 300, "power2.in");
+        penShow(s5.start - 0.03, 0.25, false);
+
+        // Scène 5 : surlignage de la ligne retenue, les autres s'estompent.
+        const c54 = s5.cards[3];
+        K($("hl"), c54.readable + 0.35, 0.65, { scaleX: 0 }, { scaleX: 1 }, "power2.inOut");
+        const fadeAt = c54.readable + 1.1;
+        K($("t-r2a"), fadeAt, 0.6, { opacity: 1 }, { opacity: 0.22 }, "power1.inOut");
+        K($("t-r2h"), fadeAt, 0.6, { opacity: 1 }, { opacity: 0.22 }, "power1.inOut");
+        K($("r2"), fadeAt, 0.6, { opacity: 1 }, { opacity: 0.3 }, "power1.inOut");
+        ["r3", "r4", "r5"].forEach((id) => K($(id), fadeAt, 0.6, { opacity: 0.25 }, { opacity: 0.1 }, "power1.inOut"));
+
+        // Scène 8 : la feuille devient la grille à deux colonnes.
+        const m = s8.start + 0.8;
+        ["t-col1", "t-col2", "t-r1a", "t-r1b", "t-r1h"].forEach((id) => K($(id), m, 0.3, { opacity: 1 }, { opacity: 0 }, "power1.in"));
+        ["t-r2a", "t-r2h"].forEach((id) => K($(id), m, 0.3, { opacity: 0.22 }, { opacity: 0 }, "power1.in"));
+        K($("hl"), m, 0.3, { opacity: 1 }, { opacity: 0 }, "power1.in");
+        K($("vdiv"), m + 0.1, 0.5, { x: 0 }, { x: -90 }, "power3.inOut");
+        const gridY = [-32, -30, -20, -10, 0];
+        const fromOp = [1, 0.3, 0.1, 0.1, 0.1];
+        ["r1", "r2", "r3", "r4", "r5"].forEach((id, i) =>
+          K($(id), m + 0.1 + i * 0.05, 0.55, { y: 0, opacity: fromOp[i] }, { y: gridY[i], opacity: 1 }, "power3.inOut")
+        );
+        reveal("g-a1", m + 0.55, 0.3);
+        reveal("g-a2", m + 0.7, 0.45);
+        reveal("g-b1", m + 0.85, 0.3);
+        reveal("g-b2", m + 1.0, 0.4);
+
+        /* ---------- scène 2 : quatorze traits groupés par sept ---------- */
+        const frise = $("frise");
+        const s2 = scene(2);
+        const kw2 = kwTimes["2-0"];
+        for (let i = 0; i < 14; i++) {
+          const tk = document.createElement("div");
+          tk.className = "tick";
+          tk.style.left = 100 + i * 46 + (i >= 7 ? 40 : 0) + "px";
+          frise.appendChild(tk);
+          gsap.set(tk, { scaleY: 0 });
+          K(tk, kw2 + i * 0.06 + (i >= 7 ? 0.1 : 0), 0.42, { scaleY: 0 }, { scaleY: 1 }, "back.out(2.2)");
+          K(tk, s2.end - 0.12 + i * 0.004, 0.15, { y: 0, opacity: 1 }, { y: -40, opacity: 0 }, "power2.in");
+        }
+
+        /* ---------- scène 7 : deux chronomètres sans chiffres ---------- */
+        const watches = $("watches");
+        const makeWatch = (cx, label) => {
+          const w = document.createElement("div");
+          w.className = "watch";
+          w.style.left = cx - 200 + "px";
+          w.style.top = "330px";
+          const ticks = [];
+          for (let i = 0; i < 60; i++) {
+            const big = i % 5 === 0;
+            const a = (i * 6 * Math.PI) / 180;
+            const r0 = big ? 128 : 146, r1 = 162;
+            ticks.push(
+              `<line x1="${(Math.sin(a) * r0).toFixed(2)}" y1="${(-Math.cos(a) * r0).toFixed(2)}" x2="${(Math.sin(a) * r1).toFixed(2)}" y2="${(-Math.cos(a) * r1).toFixed(2)}" stroke="#FFFFFF" stroke-width="${big ? 6 : 3}" />`
+            );
+          }
+          w.innerHTML =
+            `<div class="wt">${label}</div>` +
+            `<svg class="dial" width="400" height="440" viewBox="-200 -250 400 440">` +
+            `<rect x="-24" y="-248" width="48" height="26" fill="#FFFFFF" />` +
+            `<rect x="-10" y="-224" width="20" height="30" fill="#FFFFFF" />` +
+            `<g transform="rotate(42)"><rect x="-9" y="-222" width="18" height="30" fill="#FFFFFF" /></g>` +
+            `<circle cx="0" cy="0" r="182" fill="none" stroke="#FFFFFF" stroke-width="10" />` +
+            ticks.join("") +
+            `<g class="hand"><circle cx="0" cy="0" r="150" fill="none" stroke="none" /><line x1="0" y1="34" x2="0" y2="-150" stroke="#FFFFFF" stroke-width="8" stroke-linecap="square" /></g>` +
+            `<circle cx="0" cy="0" r="15" fill="#FFFFFF" />` +
+            `</svg>`;
+          watches.appendChild(w);
+          return { w, dial: w.querySelector(".dial"), hand: w.querySelector(".hand") };
+        };
+        const wL = makeWatch(300, "À la main");
+        const wR = makeWatch(740, "Avec l’outil");
+        [wL, wR].forEach((o, i) => {
+          gsap.set(o.w, { transformOrigin: "50% 60%" });
+          gsap.set(o.dial, { transformOrigin: "50% 57%" });
+          gsap.set(o.hand, { svgOrigin: "0 0", rotation: 0 });
+          const t0 = s7.start - 0.02 + i * 0.08;
+          K(o.w, t0, 0.6, { scale: 0.7, rotation: -10 }, { scale: 1, rotation: 0 }, "back.out(1.6)");
+          K(o.w, t0, 0.2, { opacity: 0 }, { opacity: 1 }, "power1.out");
+          // les deux aiguilles tournent au même rythme : aucun résultat annoncé
+          K(o.hand, s7.start, s7.end - s7.start, { rotation: 0 }, { rotation: 990 }, "none");
+          K(o.w, s7.end - 0.1, 0.2, { opacity: 1, y: 0 }, { opacity: 0, y: -50 }, "power2.in");
+        });
+        // Mise en avant d'un chronomètre puis de l'autre pendant « à la main, puis avec l’outil ».
+        const k73 = kwTimes["7-2"];
+        const c73 = s7.cards[2];
+        const mid = k73 + (c73.tOut - k73) * 0.45;
+        init(wL.dial, { scale: 1, opacity: 1 });
+        init(wR.dial, { scale: 1, opacity: 1 });
+        move(wL.dial, k73, 0.45, { scale: 1.06 }, "back.out(2)");
+        move(wR.dial, k73, 0.3, { opacity: 0.4 }, "power1.out");
+        move(wL.dial, mid, 0.4, { scale: 1, opacity: 0.4 }, "power2.out");
+        move(wR.dial, mid, 0.45, { scale: 1.06, opacity: 1 }, "back.out(2)");
+        move(wL.dial, c73.tOut, 0.4, { opacity: 1 }, "power1.out");
+        move(wR.dial, c73.tOut, 0.4, { scale: 1 }, "power2.out");
+
+        /* ---------- phrases épinglées et questions ---------- */
+        const pinIn = (el, t) => {
+          K(el, t, 0.5, { x: -30 }, { x: 0 }, "back.out(1.7)");
+          K(el, t, 0.2, { opacity: 0 }, { opacity: 1 }, "power1.out");
+        };
+        const pinOut = (el, t) => {
+          K(el, t, 0.22, { opacity: 1 }, { opacity: 0 }, "power1.in");
+        };
+        pinIn($("p1"), s5.start + 0.02);
+        pinOut($("p1"), s5.end - 0.08);
+        pinIn($("p2"), s7.start + 0.05);
+        pinOut($("p2"), s7.end - 0.08);
+
+        const dockIn = (el, t) => {
+          K(el, t, 0.5, { y: 40, scale: 1.2 }, { y: 0, scale: 1 }, "back.out(1.6)");
+          K(el, t, 0.2, { opacity: 0 }, { opacity: 1 }, "power1.out");
+        };
+        dockIn($("q1"), s5.cards[1].tOut);
+        dockIn($("q2"), s5.cards[2].tOut);
+        pinOut($("q1"), s5.end - 0.08);
+        pinOut($("q2"), s5.end - 0.06);
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

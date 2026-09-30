@@ -1,0 +1,346 @@
+{
+ "fps": 30,
+ "consts": {
+  "LINE_STAGGER": 0.08,
+  "KW_GAP": 0.12,
+  "KW_STAGGER": 0.07,
+  "KW_READ": 0.1,
+  "LINE_READ": 0.15,
+  "SWAP_GAP": 0.06666666666666667
+ },
+ "scenes": [
+  {
+   "id": 1,
+   "start": 0,
+   "cards": [
+    {
+     "size": 100,
+     "first": true,
+     "lines": [
+      "Votre premier",
+      "projet IA commence",
+      "avec un [stylo]",
+      "et une [feuille]."
+     ],
+     "text": "Votre premier projet IA commence avec un stylo et une feuille.",
+     "chars": 62,
+     "need": 4.133,
+     "tIn": 0,
+     "readable": 0.45,
+     "tOut": 4.6333
+    }
+   ],
+   "end": 4.7
+  },
+  {
+   "id": 2,
+   "start": 4.7,
+   "cards": [
+    {
+     "size": 74,
+     "lines": [
+      "Voici comment un comité",
+      "de direction trouve",
+      "son premier cas d’usage IA",
+      "en [deux semaines]."
+     ],
+     "text": "Voici comment un comité de direction trouve son premier cas d’usage IA en deux semaines.",
+     "chars": 88,
+     "need": 5.867,
+     "tIn": 4.7,
+     "readable": 5.16,
+     "tOut": 11.0667
+    }
+   ],
+   "end": 11.133333333333333
+  },
+  {
+   "id": 3,
+   "start": 11.133333333333333,
+   "cards": [
+    {
+     "size": 150,
+     "lines": [
+      "[Première]",
+      "[semaine]."
+     ],
+     "text": "Première semaine.",
+     "chars": 17,
+     "need": 1.5,
+     "tIn": 11.1333,
+     "readable": 11.5033,
+     "tOut": 13.0667
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Chaque membre du Codir",
+      "note les tâches qu’il",
+      "[refait chaque semaine]."
+     ],
+     "text": "Chaque membre du Codir note les tâches qu’il refait chaque semaine.",
+     "chars": 67,
+     "need": 4.467,
+     "tIn": 13.1333,
+     "readable": 13.5133,
+     "tOut": 18.0333
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Les comptes rendus",
+      "de réunion,",
+      "les relances de devis."
+     ],
+     "text": "Les comptes rendus de réunion, les relances de devis.",
+     "chars": 53,
+     "need": 3.533,
+     "tIn": 18.1,
+     "readable": 18.41,
+     "tOut": 22
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Et à côté de chaque tâche,",
+      "le [temps] qu’elle lui prend."
+     ],
+     "text": "Et à côté de chaque tâche, le temps qu’elle lui prend.",
+     "chars": 54,
+     "need": 3.6,
+     "tIn": 22.0667,
+     "readable": 22.3667,
+     "tOut": 26
+    }
+   ],
+   "end": 26.066666666666666
+  },
+  {
+   "id": 4,
+   "start": 26.066666666666666,
+   "cards": [
+    {
+     "size": 74,
+     "lines": [
+      "Au bout de sept jours,",
+      "vous avez une liste."
+     ],
+     "text": "Au bout de sept jours, vous avez une liste.",
+     "chars": 43,
+     "need": 2.867,
+     "tIn": 26.0667,
+     "readable": 26.2967,
+     "tOut": 29.2
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Reste à choisir",
+      "[la bonne tâche], et c’est là",
+      "que tout se joue…"
+     ],
+     "text": "Reste à choisir la bonne tâche, et c’est là que tout se joue…",
+     "chars": 61,
+     "need": 4.067,
+     "tIn": 29.2667,
+     "readable": 29.6467,
+     "tOut": 33.7667
+    }
+   ],
+   "end": 33.833333333333336
+  },
+  {
+   "id": 5,
+   "start": 33.833333333333336,
+   "cards": [
+    {
+     "size": 74,
+     "lines": [
+      "Pour chaque tâche,",
+      "[deux questions]."
+     ],
+     "text": "Pour chaque tâche, deux questions.",
+     "chars": 34,
+     "need": 2.267,
+     "tIn": 33.8333,
+     "readable": 34.1333,
+     "tOut": 36.4333
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Combien d’[heures]",
+      "par semaine elle coûte."
+     ],
+     "text": "Combien d’heures par semaine elle coûte.",
+     "chars": 40,
+     "need": 2.667,
+     "tIn": 36.5,
+     "readable": 36.8,
+     "tOut": 39.5
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Et ce qui se passe",
+      "si l’IA [se trompe]."
+     ],
+     "text": "Et ce qui se passe si l’IA se trompe.",
+     "chars": 37,
+     "need": 2.467,
+     "tIn": 39.5667,
+     "readable": 39.8667,
+     "tOut": 42.3667
+    },
+    {
+     "size": 72,
+     "lines": [
+      "Vous gardez celle qui prend",
+      "le plus de temps et dont",
+      "une erreur se rattrape",
+      "[en deux minutes]."
+     ],
+     "text": "Vous gardez celle qui prend le plus de temps et dont une erreur se rattrape en deux minutes.",
+     "chars": 92,
+     "need": 6.133,
+     "tIn": 42.4333,
+     "readable": 42.8933,
+     "tOut": 49.0667
+    }
+   ],
+   "end": 49.13333333333333
+  },
+  {
+   "id": 6,
+   "start": 49.13333333333333,
+   "cards": [
+    {
+     "size": 74,
+     "lines": [
+      "Vous tenez",
+      "votre cas d’usage."
+     ],
+     "text": "Vous tenez votre cas d’usage.",
+     "chars": 29,
+     "need": 1.933,
+     "tIn": 49.1333,
+     "readable": 49.3633,
+     "tOut": 51.3333
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Il reste l’étape qui décide",
+      "si l’outil servira",
+      "[encore dans trois mois]…"
+     ],
+     "text": "Il reste l’étape qui décide si l’outil servira encore dans trois mois…",
+     "chars": 70,
+     "need": 4.667,
+     "tIn": 51.4,
+     "readable": 51.78,
+     "tOut": 56.5
+    }
+   ],
+   "end": 56.56666666666667
+  },
+  {
+   "id": 7,
+   "start": 56.56666666666667,
+   "cards": [
+    {
+     "size": 150,
+     "lines": [
+      "[Deuxième]",
+      "[semaine]."
+     ],
+     "text": "Deuxième semaine.",
+     "chars": 17,
+     "need": 1.5,
+     "tIn": 56.5667,
+     "readable": 56.9367,
+     "tOut": 58.5
+    },
+    {
+     "size": 74,
+     "lines": [
+      "La personne qui fait",
+      "cette tâche au quotidien",
+      "[teste l’outil elle-même]."
+     ],
+     "text": "La personne qui fait cette tâche au quotidien teste l’outil elle-même.",
+     "chars": 70,
+     "need": 4.667,
+     "tIn": 58.5667,
+     "readable": 58.9467,
+     "tOut": 63.6667
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Elle chronomètre la tâche",
+      "[à la main], puis",
+      "[avec l’outil]."
+     ],
+     "text": "Elle chronomètre la tâche à la main, puis avec l’outil.",
+     "chars": 55,
+     "need": 3.667,
+     "tIn": 63.7333,
+     "readable": 64.1833,
+     "tOut": 67.9
+    },
+    {
+     "size": 74,
+     "lines": [
+      "Elle ramène ce [chiffre]",
+      "au Codir, et c’est lui",
+      "qui décide de la suite."
+     ],
+     "text": "Elle ramène ce chiffre au Codir, et c’est lui qui décide de la suite.",
+     "chars": 69,
+     "need": 4.6,
+     "tIn": 67.9667,
+     "readable": 68.3467,
+     "tOut": 73
+    }
+   ],
+   "end": 73.06666666666666
+  },
+  {
+   "id": 8,
+   "start": 73.06666666666666,
+   "cards": [
+    {
+     "size": 74,
+     "lines": [
+      "Je vous envoie la grille",
+      "de tri en deux questions."
+     ],
+     "text": "Je vous envoie la grille de tri en deux questions.",
+     "chars": 50,
+     "need": 3.333,
+     "tIn": 73.0667,
+     "readable": 73.2967,
+     "tOut": 76.6667
+    },
+    {
+     "size": 100,
+     "cta": true,
+     "lines": [
+      "Écrivez",
+      "[GRILLE]",
+      "en commentaire."
+     ],
+     "text": "Écrivez GRILLE en commentaire.",
+     "chars": 30,
+     "need": 2,
+     "tIn": 76.7333,
+     "readable": 77.1133,
+     "tOut": 79.7
+    }
+   ],
+   "end": 79.7
+  }
+ ],
+ "duration": 79.7
+}
