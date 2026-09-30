@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="fr" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Archivo";
+        src: url("assets/fonts/Archivo-latin-var.woff2") format("woff2");
+        font-weight: 100 900;
+        font-stretch: 62% 125%;
+        font-style: normal;
+      }
+      :root {
+        --ink: #241e1b;
+        --bordeaux: #6e1a2c;
+        --ocre: #c8862a;
+        --white: #ffffff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #241e1b;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--ink);
+        font-family: "Archivo", sans-serif;
+        color: var(--white);
+      }
+      .layer,
+      .grp {
+        position: absolute;
+        inset: 0;
+      }
+      #bgB,
+      #bgB2 {
+        background: var(--bordeaux);
+      }
+      #bgW {
+        background: var(--white);
+        opacity: 0;
+      }
+      #ocreW {
+        background: var(--ocre);
+        clip-path: inset(0% 100% 100% 0%);
+      }
+      #cam {
+        position: absolute;
+        inset: 0;
+        transform-origin: 510px 905px;
+        perspective: 1800px;
+      }
+
+      /* typographie : une famille, deux graisses, largeur variable animée */
+      .card {
+        position: absolute;
+        left: 90px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .card .line {
+        display: block;
+        letter-spacing: -0.025em;
+        opacity: 0;
+      }
+      .card .mask {
+        display: block;
+        overflow: hidden;
+        padding: 0 40px 0 0;
+      }
+      .card .mask > .line {
+        opacity: 1;
+      }
+      .line,
+      .w,
+      .kw,
+      .ch {
+        font-stretch: calc(var(--w, 85) * 1%);
+      }
+      .w,
+      .kw,
+      .ch {
+        display: inline-block;
+        position: relative;
+      }
+      .kw {
+        opacity: 0;
+        transform-origin: 0% 70%;
+      }
+      .ko {
+        color: var(--ocre);
+      }
+      .echo {
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: rgba(255, 255, 255, 0.06);
+        -webkit-text-stroke: 3px var(--white);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .glc {
+        position: absolute;
+        left: 90px;
+        font-weight: 800;
+        white-space: nowrap;
+        opacity: 0;
+      }
+      .glc .line {
+        display: block;
+        letter-spacing: -0.025em;
+      }
+      .glc.g-ocre,
+      .glc.g-ocre .ko {
+        color: var(--ocre);
+      }
+      .glc.g-out,
+      .glc.g-out .ko {
+        color: rgba(255, 255, 255, 0.06);
+        -webkit-text-stroke: 3px var(--white);
+      }
+
+      /* feuilles */
+      .sheet {
+        position: absolute;
+        background: var(--white);
+        box-shadow: 0 40px 80px rgba(36, 30, 27, 0.4);
+      }
+      .st {
+        position: absolute;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 48px;
+        letter-spacing: -0.01em;
+        font-stretch: 85%;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .rl {
+        position: absolute;
+        background: var(--ink);
+        transform-origin: 0 50%;
+      }
+      .pen {
+        position: absolute;
+        left: -60px;
+        top: -260px;
+        width: 200px;
+        height: 280px;
+        transform-origin: 60px 260px;
+        opacity: 0;
+      }
+      #ul {
+        position: absolute;
+        background: var(--white);
+        transform-origin: 0 50%;
+      }
+
+      /* décors */
+      .speed {
+        position: absolute;
+        left: 0;
+        background: var(--white);
+        opacity: 0;
+      }
+      .bar {
+        position: absolute;
+        background: var(--ink);
+        transform-origin: 50% 100%;
+      }
+      .hl {
+        position: absolute;
+        background: var(--ocre);
+        transform-origin: 0 50%;
+      }
+      .qmark {
+        position: absolute;
+        overflow: visible;
+      }
+      .qmark path,
+      .qmark rect {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.14);
+        stroke-width: 6;
+      }
+      #ring {
+        position: absolute;
+        left: 260px;
+        top: 830px;
+        width: 500px;
+        height: 500px;
+      }
+      #ring .track {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.28);
+      }
+      #ring .sweep {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(rgba(255, 255, 255, 0.16) calc(var(--a, 0) * 1deg), rgba(255, 255, 255, 0) 0deg);
+      }
+      #ring .hand {
+        position: absolute;
+        left: 247px;
+        top: 40px;
+        width: 6px;
+        height: 210px;
+        background: var(--white);
+        transform-origin: 50% 100%;
+      }
+      .dock {
+        position: absolute;
+        left: 90px;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 52px;
+        letter-spacing: -0.01em;
+        font-stretch: 85%;
+        color: var(--white);
+        white-space: nowrap;
+        opacity: 0;
+      }
+      .watch {
+        position: absolute;
+        width: 400px;
+        height: 560px;
+        opacity: 0;
+      }
+      .watch .wt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 400px;
+        text-align: center;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 48px;
+        letter-spacing: -0.01em;
+        font-stretch: 85%;
+        white-space: nowrap;
+      }
+      .watch svg {
+        position: absolute;
+        left: 0;
+        top: 70px;
+        overflow: visible;
+      }
+      .ray {
+        position: absolute;
+        height: 8px;
+        background: var(--white);
+        transform-origin: 0 50%;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <svg width="0" height="0" style="position: absolute">
+        <defs>
+          <filter id="mbOut" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur id="mbOutB" stdDeviation="0 0" /></filter>
+          <filter id="mbIn" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur id="mbInB" stdDeviation="0 0" /></filter>
+        </defs>
+      </svg>
+
+      <div id="bgB" class="layer"></div>
+      <div id="bgW" class="layer"></div>
+
+      <div id="cam">
+        <div id="gC" class="grp"></div>
+        <div id="gD" class="grp"></div>
+        <div id="gE" class="grp"></div>
+        <div id="gB" class="grp"></div>
+        <div id="gA" class="grp"></div>
+      </div>
+
+      <div id="ocreW" class="layer"></div>
+      <div id="bgB2" class="layer"></div>
+      <div id="gF" class="grp"></div>
+    </div>
+
+    <script>
+      (function () {
+        const $ = (id) => document.getElementById(id);
+        const NNBSP = " "; // espace fine insécable avant « ? »
+
+        // Générateur pseudo-aléatoire à graine : rendu identique à chaque image.
+        let seed = 20260930;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+
+        function build() {
+          const tl = gsap.timeline({ paused: true });
+          const K = (el, t, d, from, to, ease) =>
+            tl.fromTo(el, from, Object.assign({}, to, { duration: d, ease: ease || "none", immediateRender: false }), t);
+          const S = (el, t, props) => tl.set(el, props, t);
+          const el = (tag, cls, parent, css) => {
+            const e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (css) e.style.cssText = css;
+            (parent || document.body).appendChild(e);
+            return e;
+          };
+
+          /* ---------- constructeur de cartons ---------- */
+          // [mot clé] passe en ocre ; la ponctuation qui suit arrive avec lui.
+          function lineHTML(str, chars) {
+            const split = (s) => (chars ? [...s].map((c) => (c === " " ? " " : `<span class="ch">${c}</span>`)).join("") : s);
+            const parts = [];
+            str.replace(/\[([^\]]+)\]([.,…]?)|([^\[]+)/g, (m, kw, punct, plain) => {
+              if (kw) parts.push(`<span class="kw"><span class="ko">${split(kw)}</span>${split(punct || "")}</span>`);
+              else
+                parts.push(
+                  plain
+                    .split(/( )/)
+                    .map((w) => (w === " " || w === "" ? w : `<span class="w">${split(w)}</span>`))
+                    .join("")
+                );
+            });
+            return parts.join("");
+          }
+          function card(parent, lines, o) {
+            const c = el("div", "card", parent);
+            c.style.top = o.top + "px";
+            if (o.left !== undefined) c.style.left = o.left + "px";
+            if (o.color) c.style.color = o.color;
+            c.dataset.text = lines.map((l) => l.replace(/[\[\]]/g, "")).join(" ");
+            const sizes = o.sizes || lines.map(() => o.size);
+            lines.forEach((l, i) => {
+              const lh = Math.round(sizes[i] * (o.lh || 1.05));
+              const ln = document.createElement("div");
+              ln.className = "line";
+              ln.style.fontSize = sizes[i] + "px";
+              ln.style.lineHeight = lh + "px";
+              ln.innerHTML = lineHTML(l, o.chars);
+              if (o.mask) {
+                const m = el("div", "mask", c);
+                m.style.height = lh + "px";
+                m.appendChild(ln);
+              } else c.appendChild(ln);
+            });
+            if (o.mask) gsap.set(c.querySelectorAll(".line"), { yPercent: 110, opacity: 0 });
+            return {
+              el: c,
+              lines: [...c.querySelectorAll(".line")],
+              words: [...c.querySelectorAll(".w")],
+              kws: [...c.querySelectorAll(".kw")],
+              chars: [...c.querySelectorAll(".ch")],
+            };
+          }
+          // position d'un élément dans le repère de la page, sans transformations
+          const pos = (e) => {
+            let x = 0, y = 0;
+            for (let n = e; n && n.id !== "root"; n = n.offsetParent) {
+              x += n.offsetLeft;
+              y += n.offsetTop;
+            }
+            return { x, y, w: e.offsetWidth, h: e.offsetHeight };
+          };
+          const kwPop = (kw, t, stretch) => {
+            K(kw, t, 0.38, { scale: 0.75 }, { scale: 1 }, "back.out(1.7)");
+            K(kw, t, 0.1, { opacity: 0 }, { opacity: 1 });
+            if (stretch) K(kw, t, 0.5, { "--w": 125 }, { "--w": 85 }, "expo.out");
+          };
+          const exitUp = (c, t, opt) => {
+            const o = opt || {};
+            c.lines.forEach((ln, i) => {
+              const s = t + i * (o.stagger || 0.03);
+              K(ln, s, o.d || 0.3, { y: 0, "--w": 85 }, { y: o.y || -260, "--w": 62 }, "power3.in");
+              K(ln, s, o.fade || 0.14, { opacity: 1 }, { opacity: 0 }, "power1.in");
+            });
+          };
+
+          const gA = $("gA"), gB = $("gB"), gC = $("gC"), gD = $("gD"), gE = $("gE"), gF = $("gF");
+          const cam = $("cam");
+
+          /* =====================================================================
+             A · 0 → 5,8 s · accroche sur bordeaux
+             ===================================================================== */
+          const b1 = card(gA, ["Votre", "premier", "projet [IA]"], { size: 200, top: 560, lh: 1.0 });
+          b1.words.forEach((w) => {
+            const e = el("span", "echo", w);
+            e.textContent = w.textContent;
+            e.setAttribute("data-layout-allow-overlap", "");
+          });
+          b1.lines.forEach((ln) => gsap.set(ln, { opacity: 1 }));
+          gsap.set(b1.words, { opacity: 0 });
+          const slams = [0, 0.11, 0.22];
+          b1.words.forEach((w, i) => {
+            const t = slams[i];
+            if (i === 0) {
+              // première image déjà composée : « Votre » est lisible dès t = 0
+              gsap.set(w, { opacity: 1 });
+              K(w, 0, 0.45, { y: 26, scale: 1.08, "--w": 100, opacity: 1 }, { y: 0, scale: 1, "--w": 85, opacity: 1 }, "expo.out");
+            } else {
+              K(w, t, 0.5, { y: 150, scale: 1.35, "--w": 125 }, { y: 0, scale: 1, "--w": 85 }, "expo.out");
+              K(w, t, 0.1, { opacity: 0 }, { opacity: 1 });
+            }
+            const echo = w.querySelector(".echo");
+            K(echo, t + 0.06, 0.5, { scale: 1, opacity: 0.55 }, { scale: 1.45, opacity: 0 }, "power2.out");
+          });
+          kwPop(b1.kws[0], 0.36, true);
+          // traits de vitesse
+          for (let i = 0; i < 12; i++) {
+            const h = 3 + Math.round(rnd() * 4);
+            const w = 220 + Math.round(rnd() * 380);
+            const y = 280 + Math.round(rnd() * 1240);
+            const s = el("div", "speed", gA, `top:${y}px;width:${w}px;height:${h}px;`);
+            const t = slams[i % 3] + rnd() * 0.12;
+            K(s, t, 0.34, { x: -w - 40, opacity: 0.45 }, { x: 1120, opacity: 0.45 }, "power2.in");
+            S(s, t + 0.34, { opacity: 0 });
+          }
+          exitUp(b1, 2.1, { y: -900, stagger: 0.02, d: 0.3, fade: 0.08 });
+
+          // « commence avec un stylo » + stylo blanc qui souligne
+          const b2 = card(gA, ["commence avec", "un [stylo]"], { sizes: [120, 200], top: 640, lh: 1.02 });
+          const t2 = 2.12;
+          K(b2.lines[0], t2, 0.5, { x: 620, filter: "blur(22px)" }, { x: 0, filter: "blur(0px)" }, "expo.out");
+          K(b2.lines[0], t2, 0.12, { opacity: 0 }, { opacity: 1 });
+          K(b2.lines[1], t2 + 0.1, 0.45, { y: 130, scale: 1.2 }, { y: 0, scale: 1 }, "expo.out");
+          K(b2.lines[1], t2 + 0.1, 0.1, { opacity: 0 }, { opacity: 1 });
+          kwPop(b2.kws[0], t2 + 0.22, true);
+
+          const stylo = pos(b2.kws[0]);
+          const ulY = stylo.y + 186;
+          const ul = el("div", "", gA);
+          ul.id = "ul";
+          const UL0 = { left: stylo.x, top: ulY, width: stylo.w, height: 12 };
+          gsap.set(ul, Object.assign({ scaleX: 0 }, UL0));
+
+          const penSVG = (body, detail) =>
+            `<svg width="200" height="280" viewBox="-60 -260 200 280"><g transform="rotate(18)">` +
+            `<g opacity="0.18" transform="translate(12 4)"><path d="M0 0 L-13 -62 L-13 -248 L13 -248 L13 -62 Z" fill="#241E1B"/></g>` +
+            `<path d="M0 0 L-8 -26 L8 -26 Z" fill="${detail}"/>` +
+            `<path d="M-8 -26 L8 -26 L13 -62 L-13 -62 Z" fill="${body}" stroke="${detail}" stroke-width="3" stroke-linejoin="round"/>` +
+            `<rect x="-13" y="-232" width="26" height="170" fill="${body}"/>` +
+            `<rect x="4" y="-220" width="4" height="140" fill="${detail}" opacity="0.3"/>` +
+            `<rect x="-13" y="-248" width="26" height="16" fill="${detail}"/>` +
+            `<rect x="-21" y="-232" width="6" height="72" fill="${body}" stroke="${detail}" stroke-width="2"/></g></svg>`;
+          const penA = el("div", "pen", gA);
+          penA.innerHTML = penSVG("#FFFFFF", "#241E1B");
+          const pA0 = { x: 980, y: 1380, rotation: 30 };
+          gsap.set(penA, pA0);
+          K(penA, t2 + 0.25, 0.3, pA0, { x: stylo.x, y: ulY + 6, rotation: 0 }, "power3.out");
+          K(penA, t2 + 0.25, 0.12, { opacity: 0 }, { opacity: 1 });
+          K(penA, t2 + 0.55, 0.42, { x: stylo.x, y: ulY + 6 }, { x: stylo.x + stylo.w, y: ulY + 6 }, "power2.inOut");
+          K(ul, t2 + 0.55, 0.42, { scaleX: 0 }, { scaleX: 1 }, "power2.inOut");
+          K(penA, t2 + 1.02, 0.32, { x: stylo.x + stylo.w, y: ulY + 6, rotation: 0 }, { x: 1180, y: 420, rotation: -40 }, "power3.in");
+          S(penA, t2 + 1.34, { opacity: 0 });
+          exitUp(b2, 4.0, { y: -700, stagger: 0.02, fade: 0.1 });
+
+          // le trait devient la feuille
+          const SH_A = { left: 200, top: 300, width: 620, height: 820 };
+          gsap.set(ul, { transformPerspective: 1600 });
+          S(ul, 4.0, { transformOrigin: "50% 50%" });
+          K(ul, 4.02, 0.6, Object.assign({}, UL0), Object.assign({}, SH_A), "expo.inOut");
+          K(ul, 4.02, 0.9, { rotationY: -38, rotationX: 22, rotationZ: -6 }, { rotationY: 0, rotationX: 0, rotationZ: -2 }, "back.out(1.4)");
+          S(ul, 4.02, { boxShadow: "0 40px 80px rgba(36,30,27,0.45)" });
+          // « et une feuille. » lettre par lettre
+          const b3 = card(gA, ["et une [feuille]."], { size: 120, top: 1240, chars: true });
+          gsap.set(b3.lines[0], { opacity: 1 });
+          const t3 = 4.02;
+          const b3plain = b3.chars.filter((c) => !c.closest(".kw"));
+          b3plain.forEach((ch, i) => {
+            K(ch, t3 + i * 0.02, 0.4, { y: 90, rotation: 12 }, { y: 0, rotation: 0 }, "back.out(1.8)");
+            K(ch, t3 + i * 0.02, 0.1, { opacity: 0 }, { opacity: 1 });
+          });
+          gsap.set(b3plain, { opacity: 0 });
+          kwPop(b3.kws[0], t3 + b3plain.length * 0.02 + 0.06, true);
+          // traversée : la feuille grandit jusqu'à remplir l'écran
+          K(ul, 5.35, 0.45, { scale: 1, rotationZ: -2 }, { scale: 3.5, rotationZ: 0 }, "power3.in");
+          K(b3.lines[0], 5.38, 0.22, { opacity: 1, y: 0 }, { opacity: 0, y: 60 }, "power2.in");
+          S($("bgW"), 5.8, { opacity: 1 });
+          S(gA, 5.8, { opacity: 0 });
+          S($("bgB"), 5.8, { opacity: 0 });
+
+          /* =====================================================================
+             B · 5,8 → 7,45 s · « Deux semaines. » sur la page blanche
+             ===================================================================== */
+          const b4 = card(gB, ["Deux", "semaines."], { size: 180, top: 330, lh: 1.0, color: "#241E1B" });
+          const t4 = 5.8;
+          // surlignage ocre sous le texte, posé avant le carton dans l'ordre d'affichage
+          b4.lines.forEach((ln, i) => {
+            const w = ln.querySelector(".w");
+            const p = pos(w);
+            const hl = el("div", "hl", gB, `left:${p.x - 14}px;top:${p.y + 96}px;width:${p.w + 28}px;height:66px;`);
+            gB.insertBefore(hl, b4.el);
+            gsap.set(hl, { scaleX: 0 });
+            K(hl, t4 + 0.16 + i * 0.08, 0.32, { scaleX: 0 }, { scaleX: 1 }, "power3.out");
+            K(hl, 7.08, 0.18, { opacity: 1 }, { opacity: 0 });
+          });
+          b4.lines.forEach((ln, i) => {
+            K(ln, t4 + i * 0.07, 0.45, { y: 70, scale: 1.25, "--w": 110 }, { y: 0, scale: 1, "--w": 85 }, "expo.out");
+            K(ln, t4 + i * 0.07, 0.12, { opacity: 0 }, { opacity: 1 });
+          });
+          gsap.set(b4.lines, { transformOrigin: "0% 50%" });
+          K(b4.el, 7.08, 0.2, { opacity: 1 }, { opacity: 0 });
+          // quatorze traits groupés par sept, qui deviennent un calendrier de deux semaines
+          const bars = [];
+          for (let i = 0; i < 14; i++) {
+            const x = 90 + i * 50 + (i >= 7 ? 70 : 0);
+            const b = el("div", "bar", gB, `left:${x}px;top:1010px;width:16px;height:130px;`);
+            gsap.set(b, { scaleY: 0 });
+            K(b, t4 + 0.15 + i * 0.03, 0.35, { scaleY: 0 }, { scaleY: 1 }, "back.out(2)");
+            const col = i % 7, row = Math.floor(i / 7);
+            K(
+              b,
+              6.55 + i * 0.015,
+              0.36,
+              { left: x, top: 1010, width: 16, height: 130 },
+              { left: 90 + col * 116, top: 960 + row * 116, width: 100, height: 100 },
+              "back.out(1.3)"
+            );
+            bars.push(b);
+          }
+          // une case avale l'écran : retour sur l'encre
+          const last = bars[13];
+          K(last, 7.05, 0.4, { left: 90 + 6 * 116, top: 1076, width: 100, height: 100 }, { left: -20, top: -20, width: 1120, height: 1960 }, "expo.inOut");
+          bars.slice(0, 13).forEach((b, i) => K(b, 7.05 + i * 0.01, 0.2, { opacity: 1 }, { opacity: 0 }));
+          S($("bgW"), 7.45, { opacity: 0 });
+          S(gB, 7.45, { opacity: 0 });
+
+          /* =====================================================================
+             C · 7,45 → 11,7 s · première semaine, la liste s'écrit
+             ===================================================================== */
+          const b5 = card(gC, ["[Première]", "[semaine]."], { size: 160, top: 250, lh: 1.0, chars: true });
+          gsap.set(b5.lines, { opacity: 1 });
+          gsap.set(b5.kws, { opacity: 1 });
+          gsap.set(b5.chars, { opacity: 0 });
+          const t5 = 7.45;
+          b5.chars.forEach((ch, i) => {
+            K(ch, t5 + i * 0.012, 0.42, { y: 110, "--w": 125, scaleY: 1.4 }, { y: 0, "--w": 85, scaleY: 1 }, "expo.out");
+            K(ch, t5 + i * 0.012, 0.1, { opacity: 0 }, { opacity: 1 });
+          });
+          exitUp(b5, 8.98, { y: -400, stagger: 0.02, d: 0.28, fade: 0.1 });
+
+          // feuille : 800 × 560, montée en 3D
+          const shPos = el("div", "", gC, "position:absolute;left:110px;top:600px;width:800px;height:560px;");
+          const sheet = el("div", "sheet", shPos, "left:0;top:0;width:800px;height:560px;");
+          const hl2 = el("div", "hl", sheet, "left:20px;top:150px;width:760px;height:116px;");
+          gsap.set(hl2, { scaleX: 0 });
+          const rl = (x, y, w, h, op) => {
+            const r = el("div", "rl", sheet, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:${op || 1};`);
+            return r;
+          };
+          const hRule = rl(24, 138, 752, 4);
+          const vDiv = rl(498, 24, 3, 512);
+          const r1 = rl(24, 276, 752, 3);
+          const r2 = rl(24, 364, 752, 3);
+          const r3 = rl(24, 440, 752, 3, 0.25);
+          const r4 = rl(24, 516, 752, 3, 0.25);
+          [hRule, r1, r2, r3, r4].forEach((r) => gsap.set(r, { scaleX: 0 }));
+          gsap.set(vDiv, { scaleY: 0, transformOrigin: "50% 0%" });
+          const st = (txt, x, y) => {
+            const s = el("div", "st", sheet, `left:${x}px;top:${y}px;`);
+            s.textContent = txt;
+            gsap.set(s, { clipPath: "inset(-30% 100% -30% 0%)" });
+            return s;
+          };
+          const sT1 = st("Temps", 520, 26), sT2 = st("par semaine", 520, 74);
+          const sA1 = st("Comptes rendus", 36, 160), sA2 = st("de réunion", 36, 208), sAh = st("… h", 520, 160);
+          const sB1 = st("Relances de devis", 36, 296), sBh = st("… h", 520, 296);
+          const reveal = (s, t, d) => K(s, t, d, { clipPath: "inset(-30% 100% -30% 0%)" }, { clipPath: "inset(-30% 0% -30% 0%)" });
+
+          gsap.set(shPos, { transformPerspective: 1600, transformOrigin: "50% 0%", y: 1400, rotationX: 40, rotationZ: 4 });
+          gsap.set(gC, { opacity: 0 });
+          S(gC, 7.45, { opacity: 1 });
+          K(shPos, 7.7, 0.7, { y: 1400, rotationX: 40, rotationZ: 4 }, { y: 0, rotationX: 0, rotationZ: 0 }, "back.out(1.15)");
+          K(hRule, 8.25, 0.35, { scaleX: 0 }, { scaleX: 1 }, "power3.out");
+          K(vDiv, 8.3, 0.4, { scaleY: 0 }, { scaleY: 1 }, "power3.out");
+          [r1, r2, r3, r4].forEach((r, i) => K(r, 8.35 + i * 0.05, 0.35, { scaleX: 0 }, { scaleX: 1 }, "power3.out"));
+          reveal(sT1, 8.4, 0.2);
+          reveal(sT2, 8.5, 0.3);
+          // stylo encre qui écrit la liste à toute vitesse
+          const penC = el("div", "pen", sheet);
+          penC.innerHTML = penSVG("#241E1B", "#FFFFFF");
+          const pc = { x: 700, y: 480 };
+          gsap.set(penC, pc);
+          let pcur = Object.assign({}, pc);
+          const pMove = (t, d, x, y) => {
+            K(penC, t, d, { x: pcur.x, y: pcur.y }, { x, y }, "power2.inOut");
+            pcur = { x, y };
+          };
+          const pWrite = (s, t, d) => {
+            const x0 = parseFloat(s.style.left), y = parseFloat(s.style.top) + 40;
+            reveal(s, t, d);
+            K(penC, t, d, { x: x0, y }, { x: x0 + s.offsetWidth, y }, "none");
+            pcur = { x: x0 + s.offsetWidth, y };
+          };
+          K(penC, 8.9, 0.12, { opacity: 0 }, { opacity: 1 });
+          pMove(8.9, 0.18, 36, 200);
+          pWrite(sA1, 9.08, 0.34);
+          pMove(9.42, 0.1, 36, 248);
+          pWrite(sA2, 9.52, 0.24);
+          pMove(9.76, 0.12, 36, 336);
+          pWrite(sB1, 9.88, 0.36);
+          pMove(10.24, 0.3, 700, 470);
+          K(penC, 10.4, 0.15, { opacity: 1 }, { opacity: 0 });
+          // « … h » tamponnés
+          [sAh, sBh].forEach((s, i) => {
+            const t = 10.3 + i * 0.14;
+            S(s, t, { clipPath: "inset(-30% 0% -30% 0%)" });
+            K(s, t, 0.3, { scale: 1.8, opacity: 0 }, { scale: 1, opacity: 1 }, "back.out(2.2)");
+          });
+          K(shPos, 8.4, 3.2, { rotationY: 7 }, { rotationY: -4 }, "sine.inOut");
+
+          const b6 = card(gC, ["Chacun liste ses", "[tâches répétitives]."], { size: 90, top: 1240, lh: 1.1, mask: true });
+          const t6 = 8.94;
+          b6.lines.forEach((ln, i) => { K(ln, t6 + i * 0.08, 0.55, { yPercent: 110 }, { yPercent: 0 }, "expo.out"); S(ln, t6 + i * 0.08, { opacity: 1 }); });
+          kwPop(b6.kws[0], t6 + 0.08 + 0.12, false);
+
+          // panoramique filé vers la gauche
+          const mbOut = $("mbOutB"), mbIn = $("mbInB");
+          S(gC, 11.66, { filter: "url(#mbOut)" });
+          K(gC, 11.66, 0.32, { x: 0 }, { x: -1400 }, "power3.in");
+          K(mbOut, 11.66, 0.32, { attr: { stdDeviation: "0 0" } }, { attr: { stdDeviation: "70 0" } }, "power2.in");
+          S(gC, 11.99, { filter: "none", opacity: 0 });
+          b6.lines.forEach((ln) => S(ln, 11.99, { opacity: 0 }));
+
+          /* =====================================================================
+             D · 11,86 → 19,9 s · deux questions, puis le choix
+             ===================================================================== */
+          const tex = el("div", "grp", gD);
+          [
+            [60, 180, -12],
+            [560, 420, 10],
+            [180, 1060, 8],
+            [620, 1280, -9],
+          ].forEach(([x, y, r], i) => {
+            const q = el("div", "qmark", tex, `left:${x}px;top:${y}px;width:360px;height:520px;`);
+            // point d'interrogation géométrique, en contour
+            q.innerHTML =
+              `<svg width="360" height="520" viewBox="0 0 360 520" style="overflow:visible">` +
+              `<path d="M40 170 A140 140 0 1 1 250 290 L215 318 Q185 342 185 380 L185 400 L115 400 L115 372 Q115 312 165 272 L200 244 A70 70 0 1 0 110 170 Z"/>` +
+              `<rect x="115" y="436" width="70" height="70"/></svg>`;
+            gsap.set(q, { rotation: r });
+            K(q, 11.86, 8.0, { y: 0 }, { y: -220 - i * 40 }, "none");
+          });
+          K(tex, 11.86, 0.3, { opacity: 0 }, { opacity: 1 });
+          K(tex, 17.5, 0.3, { opacity: 1 }, { opacity: 0 });
+          S(gD, 11.86, { filter: "url(#mbIn)" });
+          K(gD, 11.86, 0.36, { x: 1400 }, { x: 0 }, "power3.out");
+          K(mbIn, 11.86, 0.36, { attr: { stdDeviation: "70 0" } }, { attr: { stdDeviation: "0 0" } }, "power2.out");
+          S(gD, 12.23, { filter: "none" });
+          gsap.set(gD, { x: 1400 });
+
+          const b7 = card(gD, ["[Deux]", "[questions]."], { size: 170, top: 600, lh: 1.0 });
+          gsap.set(b7.lines, { opacity: 1 });
+          gsap.set(b7.kws, { opacity: 1 });
+          K(b7.kws[0], 11.9, 0.6, { "--w": 62 }, { "--w": 85 }, "expo.out");
+          K(b7.kws[1], 11.96, 0.6, { "--w": 125 }, { "--w": 85 }, "expo.out");
+          exitUp(b7, 13.25, { y: -500, stagger: 0.04, d: 0.28 });
+
+          // question 1 et cadran qui tourne
+          const b8 = card(gD, ["Combien d’[heures]", "par semaine" + NNBSP + "?"], { size: 100, top: 430, lh: 1.1 });
+          const t8 = 13.27;
+          b8.lines.forEach((ln, i) => {
+            K(ln, t8 + i * 0.08, 0.45, { y: 90 }, { y: 0 }, "expo.out");
+            K(ln, t8 + i * 0.08, 0.12, { opacity: 0 }, { opacity: 1 });
+          });
+          kwPop(b8.kws[0], t8 + 0.2, true);
+          const ring = el("div", "", gD);
+          ring.id = "ring";
+          ring.innerHTML = `<div class="track"></div><div class="sweep"></div><div class="hand"></div>`;
+          const rHand = ring.querySelector(".hand"), rSweep = ring.querySelector(".sweep");
+          gsap.set(ring, { opacity: 0 });
+          K(ring, t8, 0.5, { scale: 0.3, rotation: -90, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1 }, "back.out(1.5)");
+          K(rSweep, t8 + 0.2, 2.2, { "--a": 0 }, { "--a": 360 }, "power1.inOut");
+          K(rHand, t8 + 0.2, 2.2, { rotation: 0 }, { rotation: 360 }, "power1.inOut");
+          K(ring, 15.38, 0.26, { scale: 1, opacity: 1 }, { scale: 0.2, opacity: 0 }, "back.in(1.5)");
+          exitUp(b8, 15.65, { y: -300, stagger: 0.03, d: 0.26 });
+          // les deux questions restent en petit au-dessus de la feuille
+          const q1 = el("div", "dock", gD, "top:236px;");
+          q1.textContent = "Combien d’heures par semaine" + NNBSP + "?";
+          const q2 = el("div", "dock", gD, "top:292px;");
+          q2.textContent = "Et si l’IA se trompe" + NNBSP + "?";
+          K(q1, 15.7, 0.4, { y: 60, opacity: 0 }, { y: 0, opacity: 1 }, "expo.out");
+
+          // question 2, entrée en glitch
+          const b9 = card(gD, ["Et si l’IA", "[se trompe]" + NNBSP + "?"], { size: 120, top: 760, lh: 1.08 });
+          const t9 = 15.67;
+          const glitchEnd = 16.03;
+          const clones = ["g-white", "g-ocre", "g-out"].map((cls) => {
+            const g = el("div", "glc " + cls, gD, `top:760px;`);
+            g.innerHTML = b9.el.innerHTML;
+            g.querySelectorAll(".line, .kw").forEach((n) => (n.style.opacity = 1));
+            return g;
+          });
+          for (let t = t9, k = 0; t < glitchEnd - 0.01; t += 2 / 30, k++) {
+            clones.forEach((g, j) => {
+              const a = Math.round(rnd() * 70);
+              const b = Math.max(0, 100 - a - 12 - Math.round(rnd() * 40));
+              const dx = Math.round((rnd() - 0.5) * 140);
+              S(g, t, { opacity: j === 2 && k % 2 ? 0 : 1, x: dx, clipPath: `inset(${a}% 0% ${b}% 0%)` });
+            });
+          }
+          clones.forEach((g) => S(g, glitchEnd, { opacity: 0, x: 0 }));
+          b9.lines.forEach((ln) => S(ln, glitchEnd, { opacity: 1 }));
+          b9.kws.forEach((kw) => S(kw, glitchEnd, { opacity: 1 }));
+          K(b9.el, glitchEnd, 0.3, { x: -18 }, { x: 0 }, "back.out(3)");
+          exitUp(b9, 17.62, { y: -300, stagger: 0.03, d: 0.26 });
+          K(q2, 17.64, 0.4, { y: 60, opacity: 0 }, { y: 0, opacity: 1 }, "expo.out");
+          K(q1, 19.86, 0.15, { opacity: 1 }, { opacity: 0 });
+          K(q2, 19.86, 0.15, { opacity: 1 }, { opacity: 0 });
+
+          // la feuille revient, la bonne ligne se surligne
+          S(gC, 17.5, { opacity: 1, x: 1300, filter: "none" });
+          S(shPos, 17.5, { y: -190, rotationY: 0 });
+          K(gC, 17.6, 0.6, { x: 1300 }, { x: 0 }, "expo.out");
+          K(gC, 17.6, 0.8, { rotationY: -55 }, { rotationY: 0 }, "back.out(1.6)");
+          gsap.set(gC, { transformOrigin: "50% 40%" });
+          K(hl2, 18.2, 0.32, { scaleX: 0 }, { scaleX: 1 }, "power3.inOut");
+          [sB1, sBh, r2, r3, r4].forEach((n, i) => K(n, 18.5, 0.3, { opacity: n === r3 || n === r4 ? 0.25 : 1 }, { opacity: n === r3 || n === r4 ? 0.1 : 0.22 }));
+          const b10 = card(gD, ["Vous tenez votre", "[cas d’usage]."], { size: 90, top: 1060, lh: 1.1, mask: true });
+          const t10 = 17.64;
+          b10.lines.forEach((ln, i) => { K(ln, t10 + i * 0.08, 0.55, { yPercent: 110 }, { yPercent: 0 }, "expo.out"); S(ln, t10 + i * 0.08, { opacity: 1 }); });
+          kwPop(b10.kws[0], t10 + 0.2, false);
+
+          // le surlignage envahit l'écran, puis se réduit en soulignement
+          const ow = $("ocreW");
+          const hlScr = { x: 110 + 20, y: 600 - 190 + 150, w: 760, h: 116 };
+          const insetOf = (r) => `inset(${r.y}px ${1080 - r.x - r.w}px ${1920 - r.y - r.h}px ${r.x}px)`;
+          K(ow, 19.9, 0.3, { clipPath: insetOf(hlScr) }, { clipPath: "inset(0px 0px 0px 0px)" }, "expo.in");
+          S(gC, 20.2, { opacity: 0 });
+          S(gD, 20.2, { opacity: 0 });
+
+          /* =====================================================================
+             E · 20,2 → 25,3 s · deuxième semaine, chronomètres, décision
+             ===================================================================== */
+          const b11 = card(gE, ["[Deuxième]", "[semaine]."], { size: 160, top: 236, lh: 1.0, chars: true, mask: true });
+          gsap.set(b11.kws, { opacity: 1 });
+          gsap.set(b11.lines, { yPercent: 0, opacity: 1 });
+          gsap.set(b11.chars, { yPercent: 120, opacity: 0 });
+          const b11w = pos(b11.kws[0]).w;
+          const barR = { x: 90, y: 566, w: b11w, h: 14 };
+          K(ow, 20.2, 0.34, { clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetOf(barR) }, "expo.inOut");
+          const t11 = 20.4;
+          b11.chars.forEach((ch, i) => { K(ch, t11 + i * 0.015, 0.45, { yPercent: 120 }, { yPercent: 0 }, "expo.out"); S(ch, t11 + i * 0.015, { opacity: 1 }); });
+          b11.chars.forEach((ch, i) => S(ch, 21.92 + i * 0.008 + 0.26, { opacity: 0 }));
+          b11.chars.forEach((ch, i) => K(ch, 21.92 + i * 0.008, 0.25, { yPercent: 0 }, { yPercent: 120 }, "power3.in"));
+          K(ow, 21.95, 0.3, { clipPath: insetOf(barR) }, { clipPath: insetOf({ x: 90 + b11w, y: 566, w: 0, h: 14 }) }, "power3.in");
+
+          // deux chronomètres, cadrans sans chiffres, aiguilles au même rythme
+          const makeWatch = (cx, label) => {
+            const w = el("div", "watch", gE, `left:${cx - 200}px;top:600px;`);
+            let ticks = "";
+            for (let i = 0; i < 60; i++) {
+              const big = i % 5 === 0, a = (i * 6 * Math.PI) / 180, r0 = big ? 118 : 134, r1 = 148;
+              ticks += `<line x1="${(Math.sin(a) * r0).toFixed(2)}" y1="${(-Math.cos(a) * r0).toFixed(2)}" x2="${(Math.sin(a) * r1).toFixed(2)}" y2="${(-Math.cos(a) * r1).toFixed(2)}" stroke="#FFFFFF" stroke-width="${big ? 6 : 3}"/>`;
+            }
+            const hand = (op, cls) =>
+              `<g class="${cls}" opacity="${op}"><circle r="140" fill="none" stroke="none"/><line x1="0" y1="30" x2="0" y2="-138" stroke="#FFFFFF" stroke-width="8"/></g>`;
+            w.innerHTML =
+              `<div class="wt">${label}</div>` +
+              `<svg class="dial" width="400" height="420" viewBox="-200 -230 400 420">` +
+              `<g class="crown"><rect x="-22" y="-226" width="44" height="24" fill="#FFFFFF"/><rect x="-9" y="-204" width="18" height="30" fill="#FFFFFF"/></g>` +
+              `<g transform="rotate(42)"><rect x="-8" y="-204" width="16" height="28" fill="#FFFFFF"/></g>` +
+              `<circle r="166" fill="none" stroke="#FFFFFF" stroke-width="10"/>` +
+              ticks +
+              hand(0.1, "gh3") + hand(0.2, "gh2") + hand(0.38, "gh1") + hand(1, "hand") +
+              `<circle r="14" fill="#FFFFFF"/></svg>`;
+            return w;
+          };
+          const wL = makeWatch(300, "À la main"), wR = makeWatch(740, "Avec l’outil");
+          [wL, wR].forEach((w, i) => {
+            const t0 = 20.62 + i * 0.1;
+            gsap.set(w, { transformPerspective: 1400, transformOrigin: "50% 100%" });
+            K(w, t0, 0.6, { rotationX: -95, y: 60 }, { rotationX: 0, y: 0 }, "back.out(1.6)");
+            K(w, t0, 0.15, { opacity: 0 }, { opacity: 1 });
+            const crown = w.querySelector(".crown");
+            K(crown, 21.0, 0.2, { y: 12 }, { y: 0 }, "back.out(3)");
+            const spin = 2160;
+            [["hand", 0], ["gh1", 10], ["gh2", 20], ["gh3", 30]].forEach(([cls, lag]) => {
+              const h = w.querySelector("." + cls);
+              gsap.set(h, { svgOrigin: "0 0", rotation: -lag });
+              K(h, 21.0, 3.1, { rotation: -lag }, { rotation: spin - lag }, "power1.in");
+            });
+            // le tampon les balaie hors du cadre
+            K(w, 24.1, 0.35, { x: 0, rotation: 0, scale: 1 }, { x: i ? 700 : -700, rotation: i ? 50 : -50, scale: 0.6 }, "power3.in");
+            K(w, 24.1, 0.3, { opacity: 1 }, { opacity: 0 }, "power2.in");
+          });
+
+          const b12 = card(gE, ["Le terrain", "[teste l’outil]."], { size: 100, top: 1170, lh: 1.1, mask: true });
+          const t12 = 21.88;
+          b12.lines.forEach((ln, i) => { K(ln, t12 + i * 0.08, 0.55, { yPercent: 110 }, { yPercent: 0 }, "expo.out"); S(ln, t12 + i * 0.08, { opacity: 1 }); });
+          kwPop(b12.kws[0], t12 + 0.2, false);
+          exitUp(b12, 23.95, { y: 200, stagger: 0.02, d: 0.22 });
+
+          // tampon : « Le Codir décide. »
+          const b13 = card(gE, ["Le Codir", "[décide]."], { size: 190, top: 700, lh: 1.0 });
+          gsap.set(b13.lines, { opacity: 1 });
+          gsap.set(b13.kws, { opacity: 1 });
+          gsap.set(b13.el, { opacity: 0, transformOrigin: "40% 50%" });
+          const t13 = 23.97;
+          K(b13.el, t13, 0.16, { scale: 2.6, opacity: 0 }, { scale: 1, opacity: 1 }, "power4.in");
+          const imp = t13 + 0.16;
+          const dp = pos(b13.kws[0]);
+          const cx = dp.x + dp.w / 2, cy = dp.y + dp.h / 2;
+          // secousse de caméra, amplitude décroissante
+          for (let k = 0; k < 10; k++) {
+            const a = 22 * (1 - k / 10);
+            S(cam, imp + k / 30, { x: Math.round((rnd() - 0.5) * 2 * a), y: Math.round((rnd() - 0.5) * 2 * a) });
+          }
+          S(cam, imp + 10 / 30, { x: 0, y: 0 });
+          // onde de choc et rayons
+          const shock = el("div", "", gE);
+          shock.innerHTML = `<svg width="1080" height="1920" style="position:absolute;left:0;top:0;overflow:visible"><circle id="shk1" cx="${cx}" cy="${cy}" r="40" fill="none" stroke="#FFFFFF" stroke-width="10" opacity="0"/><circle id="shk2" cx="${cx}" cy="${cy}" r="40" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0"/></svg>`;
+          K($("shk1"), imp, 0.55, { attr: { r: 60 }, opacity: 0.9 }, { attr: { r: 900 }, opacity: 0 }, "expo.out");
+          K($("shk2"), imp + 0.08, 0.6, { attr: { r: 60 }, opacity: 0.6 }, { attr: { r: 1200 }, opacity: 0 }, "expo.out");
+          for (let i = 0; i < 12; i++) {
+            const ang = (i / 12) * 360 + rnd() * 12;
+            const r = el("div", "ray", gE, `left:${cx}px;top:${cy - 4}px;width:${160 + Math.round(rnd() * 160)}px;`);
+            gsap.set(r, { rotation: ang, x: 0 });
+            K(r, imp, 0.4, { x: 180, scaleX: 0, opacity: 0.8 }, { x: 520, scaleX: 1, opacity: 0 }, "expo.out");
+          }
+
+          /* =====================================================================
+             F · 25,25 → 30 s · la grille et l'appel à commenter
+             ===================================================================== */
+          const bg2 = $("bgB2");
+          gsap.set(bg2, { clipPath: `circle(0px at ${cx}px ${cy}px)` });
+          K(bg2, 25.25, 0.42, { clipPath: `circle(0px at ${cx}px ${cy}px)` }, { clipPath: `circle(2300px at ${cx}px ${cy}px)` }, "power3.in");
+          S(gE, 25.7, { opacity: 0 });
+          const fDrift = el("div", "grp", gF);
+          const gPos = el("div", "", fDrift, "position:absolute;left:150px;top:250px;width:720px;height:600px;");
+          const grid = el("div", "sheet", gPos, "left:0;top:0;width:720px;height:600px;");
+          const gl = (x, y, w, h) => el("div", "rl", grid, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;`);
+          const gH = gl(24, 150, 672, 4), gV = gl(358, 24, 3, 552);
+          const gRows = [240, 330, 420, 510].map((y) => gl(24, y, 672, 3));
+          [gH, ...gRows].forEach((r) => gsap.set(r, { scaleX: 0 }));
+          gsap.set(gV, { scaleY: 0, transformOrigin: "50% 0%" });
+          const gt = (txt, x, y) => {
+            const s = el("div", "st", grid, `left:${x}px;top:${y}px;font-size:52px;line-height:56px;`);
+            s.textContent = txt;
+            gsap.set(s, { clipPath: "inset(-30% 100% -30% 0%)" });
+            return s;
+          };
+          const g1 = gt("Heures", 34, 28), g2 = gt("par semaine", 34, 84), g3 = gt("Si l’IA", 384, 28), g4 = gt("se trompe", 384, 84);
+          gsap.set(gPos, { transformPerspective: 1600, transformOrigin: "50% 50%", x: 500, y: -900, rotation: 28, rotationX: 50 });
+          K(gPos, 25.45, 0.7, { x: 500, y: -900, rotation: 28, rotationX: 50 }, { x: 0, y: 0, rotation: -2.5, rotationX: 0 }, "back.out(1.2)");
+          K(gH, 25.9, 0.3, { scaleX: 0 }, { scaleX: 1 }, "power3.out");
+          K(gV, 25.95, 0.35, { scaleY: 0 }, { scaleY: 1 }, "power3.out");
+          gRows.forEach((r, i) => K(r, 26.0 + i * 0.05, 0.3, { scaleX: 0 }, { scaleX: 1 }, "power3.out"));
+          [g1, g2, g3, g4].forEach((g, i) =>
+            K(g, 25.98 + i * 0.07, 0.25, { clipPath: "inset(-30% 100% -30% 0%)" }, { clipPath: "inset(-30% 0% -30% 0%)" })
+          );
+
+          const b14 = card(gF, ["Écrivez", "[GRILLE]", "en commentaire."], { sizes: [100, 250, 100], top: 910, lh: 1.02, chars: true });
+          b14.el.querySelectorAll(".line, .w, .kw, .ch").forEach((n) => n.setAttribute("data-layout-allow-overlap", ""));
+          const t14 = 26.15;
+          K(b14.lines[0], t14, 0.45, { x: -500, filter: "blur(20px)" }, { x: 0, filter: "blur(0px)" }, "expo.out");
+          K(b14.lines[0], t14, 0.12, { opacity: 0 }, { opacity: 1 });
+          gsap.set(b14.lines[1], { opacity: 1 });
+          gsap.set(b14.kws[0], { opacity: 1 });
+          const gch = b14.lines[1].querySelectorAll(".ch");
+          gch.forEach((ch, i) => {
+            const s = t14 + 0.12 + i * 0.05;
+            K(ch, s, 0.55, { y: -420, rotation: (i % 2 ? 1 : -1) * 24, "--w": 125 }, { y: 0, rotation: 0, "--w": 85 }, "back.out(1.5)");
+            K(ch, s, 0.08, { opacity: 0 }, { opacity: 1 });
+          });
+          gsap.set(gch, { opacity: 0 });
+          K(b14.lines[2], t14 + 0.5, 0.45, { y: 100 }, { y: 0 }, "expo.out");
+          K(b14.lines[2], t14 + 0.5, 0.12, { opacity: 0 }, { opacity: 1 });
+          K(fDrift, 26.4, 3.6, { scale: 1 }, { scale: 1.03 }, "none");
+          gsap.set(fDrift, { transformOrigin: "510px 905px" });
+
+          /* ---------- caméra : poussée lente dans chaque scène ---------- */
+          [[0, 5.35], [7.45, 11.66], [11.9, 19.9], [20.4, 24.12]].forEach(([a, b]) => {
+            K(cam, a, b - a, { scale: 1 }, { scale: 1.035 }, "none");
+          });
+
+          tl.seek(0);
+          window.__timelines = window.__timelines || {};
+          window.__timelines["main"] = tl;
+        }
+
+        document.fonts.load('800 100px "Archivo"').then(() => document.fonts.ready).then(build);
+      })();
+    </script>
+  </body>
+</html>
