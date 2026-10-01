@@ -1,0 +1,1465 @@
+<!doctype html>
+<html lang="fr" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Schibsted Grotesk";
+        src: url("assets/fonts/schibsted-grotesk-latin.woff2") format("woff2");
+        font-weight: 400 900;
+        font-style: normal;
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #241e1b;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #241e1b;
+        color: #ffffff;
+        font-family: "Schibsted Grotesk", sans-serif;
+        font-kerning: normal;
+      }
+      #cadre,
+      #mosaique,
+      #monde,
+      #flash {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+      #monde {
+        transform-origin: 0 0;
+      }
+      #flash {
+        background: #ffffff;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .scene {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+      .bloc {
+        position: absolute;
+        white-space: nowrap;
+        color: #ffffff;
+      }
+      .masque {
+        position: absolute;
+        left: -24px;
+        overflow: hidden;
+      }
+      .ligne {
+        position: absolute;
+        left: 24px;
+        white-space: pre;
+        will-change: transform;
+      }
+      .heros .ligne {
+        transform-origin: 0% 60%;
+      }
+      .k {
+        color: #c8862a;
+      }
+      .compteur {
+        position: absolute;
+        display: flex;
+        align-items: flex-start;
+        color: #c8862a;
+        font-weight: 900;
+      }
+      .rouleau {
+        position: relative;
+        overflow: hidden;
+      }
+      .bande {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        will-change: transform;
+      }
+      .bande div,
+      .fixe {
+        text-align: center;
+      }
+      .fixe {
+        transform-origin: 30% 70%;
+      }
+      .trait {
+        position: absolute;
+        background: #c8862a;
+        transform-origin: 0% 50%;
+      }
+      .barre {
+        position: absolute;
+        background: #8e2740;
+        transform-origin: 0% 50%;
+      }
+      .tuile {
+        position: absolute;
+        width: 72px;
+        height: 72px;
+      }
+      .tuile-cadre {
+        border: 6px solid #8e2740;
+        background: #241e1b;
+      }
+      .remplissage {
+        position: absolute;
+        inset: 0;
+        background: #c8862a;
+      }
+      .tuile-vif {
+        background: #8e2740;
+      }
+      .tuile-ocre {
+        background: #c8862a;
+      }
+      .rangee {
+        position: absolute;
+        left: 0;
+        top: 0;
+        will-change: transform;
+      }
+      .fiche {
+        position: absolute;
+        background: #6e1a2c;
+        will-change: transform;
+      }
+      .fiche-ligne {
+        position: absolute;
+        height: 16px;
+        background: #ffffff;
+        transform-origin: 0% 50%;
+      }
+      .fiche-masque {
+        position: absolute;
+        height: 28px;
+        background: #c8862a;
+        transform-origin: 0% 50%;
+      }
+      .plaque {
+        position: absolute;
+        background: #6e1a2c;
+        transform-origin: 0% 50%;
+      }
+      .petite {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        border: 5px solid #8e2740;
+        background: #241e1b;
+      }
+      #horloge {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 420px;
+        height: 420px;
+        transform-origin: 210px 210px;
+        visibility: hidden;
+      }
+      #horloge svg {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="49"
+      data-width="1080"
+      data-height="1920"
+      data-fps="30"
+    >
+      <svg id="filtres" width="0" height="0" style="position: absolute" aria-hidden="true">
+        <defs>
+          <filter id="flou-cadre" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+            <feGaussianBlur id="flou-cadre-noeud" stdDeviation="0 0" edgeMode="duplicate" />
+          </filter>
+        </defs>
+      </svg>
+      <div id="cadre">
+        <canvas id="mosaique" width="1080" height="1920"></canvas>
+        <div id="monde" data-layout-allow-overflow>
+          <section id="s1" class="scene clip" data-layout-allow-overflow data-start="0" data-duration="4.15" data-track-index="1"></section>
+          <section id="s2" class="scene clip" data-layout-allow-overflow data-start="3.85" data-duration="7.3" data-track-index="2"></section>
+          <section id="s3" class="scene clip" data-layout-allow-overflow data-start="10.85" data-duration="4.8" data-track-index="1"></section>
+          <section id="s4" class="scene clip" data-layout-allow-overflow data-start="15.35" data-duration="10.3" data-track-index="2"></section>
+          <section id="s5" class="scene clip" data-layout-allow-overflow data-start="25.35" data-duration="5.3" data-track-index="1"></section>
+          <section id="s6" class="scene clip" data-layout-allow-overflow data-start="30.35" data-duration="3.8" data-track-index="2"></section>
+          <section id="s7" class="scene clip" data-layout-allow-overflow data-start="33.85" data-duration="4.3" data-track-index="1"></section>
+          <section id="s8" class="scene clip" data-layout-allow-overflow data-start="37.85" data-duration="4.3" data-track-index="2"></section>
+          <section id="s9" class="scene clip" data-layout-allow-overflow data-start="41.85" data-duration="7.15" data-track-index="1"></section>
+        </div>
+        <div id="horloge"></div>
+      </div>
+      <div id="flash"></div>
+    </div>
+
+    <!-- contenu:debut -->
+    <script id="contenu" type="application/json">{"textes":{"_mode_emploi":"Seul fichier à modifier pour un nouveau cas client. Les crochets [ ] passent un mot clé en ocre et disparaissent à l'affichage. Après modification : npm run contenu (lancé aussi automatiquement par npm run check et npm run render).","accroche":{"chiffre":"[10 h]","texte":"gagnées chaque semaine, d’après Rosalie."},"qui":{"nom":"Rosalie Bojoly,","role":"coach, fondatrice de Quallista.","date":"Le 8 septembre, une journée de formation IA avec moi."},"matin":{"heure":"[9 h]","texte":"On protège ses données avant le premier cas réel."},"competences":{"titre":"[5 compétences] Claude installées :","liste":["comptes rendus de coaching","restitutions DISC","synthèses de questionnaires","relances de prospects","posts LinkedIn dans sa voix"]},"sixieme":{"texte":"La sixième, elle l’a fabriquée elle-même :","ligne":"[préparation d’entretiens]."},"soir":{"heure":"[17 h]","texte":"Elle repart avec ses outils en main."},"resultat":{"intro":"Depuis, elle estime gagner","chiffre":"[10 h par semaine]."},"suite":{"texte":"Et elle continue : un rendez-vous par mois.","tuiles":12},"fin":{"nom":"Antoine Contino","titre":"formateur IA","appel":"Audit IA de 30 min : lien en commentaire"}},"plan":{"duree":49,"scenes":[{"id":"s1","debut":0,"duree":4},{"id":"s2","debut":4,"duree":7},{"id":"s3","debut":11,"duree":4.5},{"id":"s4","debut":15.5,"duree":10},{"id":"s5","debut":25.5,"duree":5},{"id":"s6","debut":30.5,"duree":3.5},{"id":"s7","debut":34,"duree":4},{"id":"s8","debut":38,"duree":4},{"id":"s9","debut":42,"duree":7}],"pasLignes":1.2}}</script>
+    <!-- contenu:fin -->
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---------- Données : textes de contenu.json, plan de durées calculé par scripts/contenu.mjs
+        const DONNEES = JSON.parse(document.getElementById("contenu").textContent);
+        const TX = DONNEES.textes;
+        const PLAN = DONNEES.plan;
+        const DUREE = PLAN.duree;
+        const S = {};
+        const SD = {};
+        PLAN.scenes.forEach((s) => {
+          S[s.id] = s.debut;
+          SD[s.id] = s.duree;
+        });
+        const FIN = (id) => S[id] + SD[id];
+
+        // ---------- Constantes de charte
+        const W = 1080;
+        const H = 1920;
+        const O = { x: 510, y: 960 }; // centre du carré texte, origine du zoom caméra
+        const X0 = 110;
+        const LARG = 800;
+        const COUL = {
+          encre: "#241E1B",
+          bord: "#6E1A2C",
+          vif: "#8E2740",
+          ocre: "#C8862A",
+          blanc: "#FFFFFF",
+        };
+        const POLICE = '"Schibsted Grotesk"';
+        // Position de chaque scène dans le monde : la caméra passe de l'une à l'autre.
+        const MONDE = {
+          s1: [0, 0],
+          s2: [1080, 0],
+          s3: [1080, 1920],
+          s4: [2160, 1920],
+          s5: [2160, 3840],
+          s6: [1080, 3840],
+          s7: [0, 3840],
+          s8: [0, 5760],
+          s9: [1080, 5760],
+        };
+        const ORDRE = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9"];
+
+        const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+        const lerp = (a, b, p) => a + (b - a) * p;
+        function hash3(a, b, c) {
+          let h = Math.imul(a | 0, 374761393) ^ Math.imul(b | 0, 668265263) ^ Math.imul(c | 0, 1442695041);
+          h = Math.imul(h ^ (h >>> 13), 1274126177);
+          h ^= h >>> 16;
+          return (h >>> 0) / 4294967296;
+        }
+        // Piste d'images clés : [[t, v], [t, v, "ease"], ...]. L'ease d'une clé règle le segment qui y arrive.
+        function piste(cles) {
+          const ks = cles.map((k) => ({ t: k[0], v: k[1], e: gsap.parseEase(k[2] || "none") }));
+          return function (t) {
+            if (t < ks[0].t) return ks[0].v;
+            for (let i = 1; i < ks.length; i++) {
+              if (t < ks[i].t) {
+                const a = ks[i - 1];
+                const b = ks[i];
+                return a.v + (b.v - a.v) * b.e((t - a.t) / (b.t - a.t));
+              }
+            }
+            return ks[ks.length - 1].v;
+          };
+        }
+
+        Promise.all([
+          document.fonts.load("900 100px " + POLICE),
+          document.fonts.load("500 100px " + POLICE),
+        ]).then(construire, construire);
+
+        function construire() {
+          const tl = gsap.timeline({ paused: true });
+          const scenes = {};
+          ORDRE.forEach((id) => {
+            const el = document.getElementById(id);
+            el.style.left = MONDE[id][0] + "px";
+            el.style.top = MONDE[id][1] + "px";
+            scenes[id] = el;
+          });
+
+          // ---------- Impacts : secousse caméra (8 px au plus) et pulsation de la mosaïque
+          const IMPACTS = [];
+          const impact = (t, a) => IMPACTS.push({ t, a });
+
+          // ---------- Trous dans la mosaïque : le texte repose toujours sur l'encre
+          const TROUS = [];
+          function trou(id, x, y, w, h, t0, vague) {
+            // Une zone ouverte en début de scène s'ouvre pendant le whip, sous le flou.
+            if (t0 <= S[id] + 0.3 && id !== "s1") t0 = S[id] - 0.1;
+            TROUS.push({
+              x0: MONDE[id][0] + x - 16,
+              y0: MONDE[id][1] + y - 12,
+              x1: MONDE[id][0] + x + w + 16,
+              y1: MONDE[id][1] + y + h + 12,
+              t0,
+              t1: FIN(id) + 0.4,
+              v: vague || 0.1,
+            });
+          }
+
+          // ---------- Mesure et coupe des lignes
+          const mctx = document.createElement("canvas").getContext("2d");
+          function largeur(str, poids, taille, approche) {
+            mctx.font = poids + " " + taille + "px " + POLICE;
+            mctx.letterSpacing = (approche || 0) * taille + "px";
+            return mctx.measureText(str).width;
+          }
+          const PETITS = new Set([
+            "de", "d’", "la", "le", "les", "l’", "un", "une", "et", "à", "en", "du", "des",
+            "au", "aux", "sa", "ses", "son", "sur", "par", "ce", "on", "y", "ne",
+          ]);
+          function analyser(texte) {
+            const mots = [];
+            let cle = false;
+            let cour = null;
+            for (const ch of texte) {
+              if (ch === "[") {
+                cle = true;
+                continue;
+              }
+              if (ch === "]") {
+                cle = false;
+                continue;
+              }
+              if (ch === " ") {
+                if (cour) mots.push(cour);
+                cour = null;
+                continue;
+              }
+              if (!cour) cour = { segs: [] };
+              const d = cour.segs[cour.segs.length - 1];
+              if (d && d.k === cle) d.t += ch;
+              else cour.segs.push({ t: ch, k: cle });
+            }
+            if (cour) mots.push(cour);
+            mots.forEach((m) => (m.brut = m.segs.map((s) => s.t).join("")));
+            return mots;
+          }
+          // Groupes insécables : petit mot + mot suivant, nombre + unité, mot + deux-points.
+          function unites(mots) {
+            const u = [];
+            let g = [];
+            mots.forEach((m, i) => {
+              g.push(m);
+              const suiv = mots[i + 1];
+              const colle =
+                suiv &&
+                (PETITS.has(m.brut.toLowerCase()) || /^\d+$/.test(m.brut) || /^[:;!?»]$/.test(suiv.brut));
+              if (!colle) {
+                u.push(g);
+                g = [];
+              }
+            });
+            if (g.length) u.push(g);
+            return u;
+          }
+          function couper(texte, poids, taille, approche, maxL) {
+            const us = unites(analyser(texte));
+            const chaine = (l) => l.map((g) => g.map((m) => m.brut).join(" ")).join(" ");
+            const lw = (l) => largeur(chaine(l), poids, taille, approche);
+            const glouton = (L) => {
+              const lignes = [];
+              let cour = [];
+              for (const u of us) {
+                const essai = cour.concat([u]);
+                if (cour.length && lw(essai) > L) {
+                  lignes.push(cour);
+                  cour = [u];
+                } else cour = essai;
+              }
+              if (cour.length) lignes.push(cour);
+              return lignes;
+            };
+            let lignes = glouton(maxL);
+            const nb = lignes.length;
+            if (nb > 1) {
+              let lo = maxL * 0.35;
+              let hi = maxL;
+              for (let k = 0; k < 20; k++) {
+                const mid = (lo + hi) / 2;
+                if (glouton(mid).length <= nb) hi = mid;
+                else lo = mid;
+              }
+              lignes = glouton(hi);
+            }
+            return lignes.map((l) => ({ mots: l.flat(), largeur: lw(l) }));
+          }
+          // Bloc de texte positionné dans une scène. o : poids, taille, interligne, approche, x, y, maxL, heros
+          function bloc(id, texte, o) {
+            let taille = o.taille;
+            let lignes;
+            for (;;) {
+              lignes = couper(texte, o.poids, taille, o.approche || 0, o.maxL);
+              const ok = lignes.every((l) => l.largeur <= o.maxL + 0.5) && lignes.length <= (o.maxLignes || 4);
+              if (ok || taille <= (o.tailleMin || 40)) break;
+              taille -= 2;
+            }
+            const pas = Math.round(taille * o.interligne);
+            const marge = Math.round(taille * 0.3);
+            const el = document.createElement("div");
+            el.className = "bloc" + (o.heros ? " heros" : "");
+            el.dataset.texte = texte;
+            el.dataset.carton = o.carton || texte;
+            // Interlignage serré voulu sur les héros : les boîtes de ligne se touchent, les glyphes non.
+            if (o.heros || o.serre) el.setAttribute("data-layout-allow-overlap", "");
+            el.style.left = o.x + "px";
+            el.style.top = o.y + "px";
+            el.style.font = o.poids + " " + taille + "px " + POLICE;
+            el.style.letterSpacing = (o.approche || 0) + "em";
+            if (o.couleur) el.style.color = o.couleur;
+            const lignesEl = [];
+            lignes.forEach((l, i) => {
+              const m = document.createElement("div");
+              m.className = "masque";
+              m.setAttribute("data-layout-allow-overflow", "");
+              m.style.top = i * pas - marge + "px";
+              m.style.height = pas + 2 * marge + "px";
+              m.style.width = Math.ceil(l.largeur) + 48 + "px";
+              if (o.heros) m.style.overflow = "visible";
+              const ligne = document.createElement("div");
+              ligne.className = "ligne";
+              ligne.style.top = marge + "px";
+              ligne.style.lineHeight = pas + "px";
+              ligne.style.height = pas + "px";
+              ligne.style.width = Math.ceil(l.largeur) + 4 + "px";
+              l.mots.forEach((mot, j) => {
+                if (j) ligne.appendChild(document.createTextNode(" "));
+                mot.segs.forEach((sg) => {
+                  const sp = document.createElement("span");
+                  sp.textContent = sg.t;
+                  if (o.heros || o.serre) sp.setAttribute("data-layout-allow-overlap", "");
+                  if (sg.k) sp.className = "k";
+                  ligne.appendChild(sp);
+                });
+              });
+              m.appendChild(ligne);
+              el.appendChild(m);
+              lignesEl.push(ligne);
+            });
+            (o.parent || scenes[id]).appendChild(el);
+            const w = Math.max(...lignes.map((l) => l.largeur));
+            const largeurs = lignes.map((l) => l.largeur);
+            el.style.width = Math.ceil(w) + "px";
+            el.style.height = lignes.length * pas + "px";
+            return { el, lignes: lignesEl, largeurs, h: lignes.length * pas, w, taille, pas, marge, x: o.x, y: o.y };
+          }
+          // Échelle maximale pour qu'une boîte agrandie autour de son origine reste dans le carré texte.
+          const CARRE = { x0: 72, x1: 948, y0: 432, y1: 1488 };
+          function echelleMax(x, y, w, h, ox, oy) {
+            const ax = x + ox * w;
+            const ay = y + oy * h;
+            let s = 4;
+            if (ax > x) s = Math.min(s, (ax - CARRE.x0) / (ax - x));
+            if (x + w > ax) s = Math.min(s, (CARRE.x1 - ax) / (x + w - ax));
+            if (ay > y) s = Math.min(s, (ay - CARRE.y0) / (ay - y));
+            if (y + h > ay) s = Math.min(s, (CARRE.y1 - ay) / (y + h - ay));
+            return Math.max(1, s);
+          }
+          // Claque bornée : un héros qui arrive en grand sans jamais sortir du carré texte.
+          function claqueLigne(b, i, t, voulu, d, ease) {
+            const ligne = b.lignes[i];
+            ligne.style.transformOrigin = "0% 60%";
+            const s = Math.min(voulu, echelleMax(b.x, b.y + i * b.pas, b.largeurs[i], b.pas, 0, 0.6) / 1.04);
+            claque(ligne, t, { scale: s }, d, ease);
+          }
+          function claqueBloc(b, t, voulu, ox, oy, d, ease) {
+            b.el.style.transformOrigin = ox * 100 + "% " + oy * 100 + "%";
+            const s = Math.min(voulu, echelleMax(b.x, b.y, b.w, b.h, ox, oy) / 1.04);
+            claque(b.el, t, { scale: s }, d, ease);
+          }
+
+          // ---------- Gestes d'animation
+          // Révélation par masque, ligne à ligne (snappy).
+          function revele(b, t, ecart, d) {
+            b.lignes.forEach((l, i) => {
+              tl.fromTo(
+                l,
+                { y: b.pas + b.marge },
+                { y: 0, duration: d || 0.34, ease: "power4.out" },
+                t + i * (ecart == null ? 0.08 : ecart),
+              );
+            });
+          }
+          // Apparition franche : opacité binaire (aucun fondu à l'entrée).
+          function allume(el, t) {
+            tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "steps(1)" }, t);
+          }
+          // Claque d'un texte héros (bouncy).
+          function claque(el, t, de, d, ease) {
+            allume(el, t);
+            tl.fromTo(
+              el,
+              Object.assign({ scale: 1.8, x: 0, y: 0 }, de || {}),
+              { scale: 1, x: 0, y: 0, duration: d || 0.42, ease: ease || "back.out(2.2)" },
+              t,
+            );
+          }
+          // Pulsation : montée éclair puis retour au repos. La première moitié part de l'état de repos,
+          // donc un retour en arrière dans le temps retombe toujours sur le repos.
+          function pouls(el, pic, t, d) {
+            const repos = {};
+            Object.keys(pic).forEach((k) => (repos[k] = /^scale/.test(k) ? 1 : 0));
+            tl.fromTo(el, Object.assign({}, repos), Object.assign({}, pic, { duration: 0.04, ease: "none", immediateRender: false }), t);
+            tl.fromTo(el, Object.assign({}, pic), Object.assign({}, repos, { duration: d || 0.3, ease: "power3.out", immediateRender: false }), t + 0.04);
+          }
+          // Déplacement rapide avec flou de mouvement directionnel (SVG), piloté par un proxy.
+          let nFlou = 0;
+          const defs = document.querySelector("#filtres defs");
+          function filtre() {
+            const id = "fm" + nFlou++;
+            const f = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+            f.setAttribute("id", id);
+            f.setAttribute("x", "-60%");
+            f.setAttribute("y", "-60%");
+            f.setAttribute("width", "220%");
+            f.setAttribute("height", "220%");
+            f.setAttribute("color-interpolation-filters", "sRGB");
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "feGaussianBlur");
+            g.setAttribute("stdDeviation", "0 0");
+            f.appendChild(g);
+            defs.appendChild(f);
+            return { id, noeud: g };
+          }
+          function mouvement(el, o) {
+            const f = filtre();
+            const ease = gsap.parseEase(o.ease || "power4.out");
+            const de = Object.assign({ x: 0, y: 0, s: 1 }, o.de);
+            const a = Object.assign({ x: 0, y: 0, s: 1 }, o.a);
+            const etat = (p) => {
+              const e = ease(clamp(p, 0, 1));
+              return { x: lerp(de.x, a.x, e), y: lerp(de.y, a.y, e), s: lerp(de.s, a.s, e) };
+            };
+            const appliquer = (p) => {
+              const e1 = etat(p);
+              const depart = o.flouDepart && p <= 0;
+              const e0 = depart ? etat(1 / 30 / o.d) : etat(p - 1 / 30 / o.d);
+              el.style.transform = "translate(" + e1.x + "px," + e1.y + "px) scale(" + e1.s + ")";
+              const enVol = (p > 0 && p < 1) || depart;
+              const sx = enVol ? Math.min(28, Math.abs(e1.x - e0.x) / 4.5) : 0;
+              const sy = enVol ? Math.min(28, Math.abs(e1.y - e0.y) / 4.5) : 0;
+              if (sx + sy > 0.4) {
+                f.noeud.setAttribute("stdDeviation", sx.toFixed(2) + " " + sy.toFixed(2));
+                el.style.filter = "url(#" + f.id + ")";
+              } else el.style.filter = "none";
+            };
+            const proxy = { p: 0 };
+            appliquer(o.init == null ? 0 : o.init);
+            tl.fromTo(
+              proxy,
+              { p: 0 },
+              { p: 1, duration: o.d, ease: "none", immediateRender: false, onUpdate: () => appliquer(proxy.p) },
+              o.t,
+            );
+          }
+          function div(classe, parent, styles) {
+            const el = document.createElement("div");
+            el.className = classe;
+            Object.assign(el.style, styles || {});
+            parent.appendChild(el);
+            return el;
+          }
+          const px = (v) => v + "px";
+
+          // ============ SCÈNE 1 : accroche, compteur à rouleaux sur 10 h ============
+          (function () {
+            const id = "s1";
+            const t0 = S[id];
+            const brut = TX.accroche.chiffre;
+            const cle = /\[/.test(brut);
+            const chars = [...brut.replace(/[[\]]/g, "")];
+            const ch1 = Math.max(...[..."0123456789"].map((d) => largeur(d, 900, 100, -0.02))) / 100;
+            const larg1 = chars.map((c) => (/\d/.test(c) ? ch1 : largeur(c, 900, 100, -0.02) / 100));
+            const total1 = larg1.reduce((a, b) => a + b, 0);
+            const taille = Math.min(340, Math.floor(LARG / total1));
+            const cel = Math.round(taille * 1.08);
+            const largeurHeros = total1 * taille;
+            const carton = { taille: 84, interligne: 1.14 };
+            // Hauteur totale pour centrer le groupe dans le carré texte.
+            const lignesCarton = couper(TX.accroche.texte, 500, carton.taille, -0.01, LARG).length;
+            const hCarton = lignesCarton * Math.round(carton.taille * carton.interligne);
+            const hTotal = cel + 30 + 22 + 64 + hCarton;
+            const y0 = Math.round(clamp(O.y - hTotal / 2, 480, 1440 - hTotal));
+            const compteur = div("compteur", scenes[id], {
+              left: px(X0),
+              top: px(y0),
+              height: px(cel),
+              font: "900 " + taille + "px " + POLICE,
+              lineHeight: px(cel),
+              letterSpacing: "-0.02em",
+              color: cle ? COUL.ocre : COUL.blanc,
+            });
+            compteur.dataset.texte = brut;
+            compteur.dataset.carton = brut;
+            let k = 0;
+            chars.forEach((c, i) => {
+              const w = larg1[i] * taille;
+              if (/\d/.test(c)) {
+                const r = div("rouleau", compteur, { width: px(w), height: px(cel) });
+                const bande = div("bande", r);
+                bande.setAttribute("data-layout-allow-overflow", "");
+                const d = Number(c);
+                const tours = 2;
+                const suite = [];
+                for (let n = 0; n < tours * 10 + d + 2; n++) suite.push(n % 10);
+                suite.forEach((n) => {
+                  const cell = div("", bande, { height: px(cel), lineHeight: px(cel) });
+                  cell.textContent = String(n);
+                });
+                const cible = -(tours * 10 + d) * cel;
+                mouvement(bande, {
+                  de: { y: 0 },
+                  a: { y: cible },
+                  t: t0,
+                  d: 0.36 + 0.08 * k,
+                  ease: "back.out(1.1)",
+                  flouDepart: true,
+                });
+                k++;
+              } else {
+                const f = div("fixe", compteur, { width: px(w), height: px(cel), lineHeight: px(cel) });
+                f.textContent = c === " " ? " " : c;
+                if (c !== " ") {
+                  tl.fromTo(f, { scale: 0.3 }, { scale: 1, duration: 0.32, ease: "back.out(2.4)" }, t0);
+                }
+              }
+            });
+            trou(id, X0, y0 + cel * 0.12, largeurHeros, cel * 0.8, t0 - 1, 0.1);
+            impact(t0, 3);
+            impact(t0 + 0.45, 3);
+            // Trait ocre qui claque
+            const trait = div("trait", scenes[id], {
+              left: px(X0 + 4),
+              top: px(y0 + cel + 30),
+              width: px(largeurHeros - 8),
+              height: px(22),
+            });
+            tl.fromTo(trait, { scaleX: 0 }, { scaleX: 1, duration: 0.16, ease: "expo.out" }, t0 + 0.5);
+            impact(t0 + 0.5, 5);
+            // Carton
+            const yC = y0 + cel + 30 + 22 + 64;
+            const b = bloc(id, TX.accroche.texte, {
+              poids: 500,
+              taille: carton.taille,
+              interligne: carton.interligne,
+              approche: -0.01,
+              x: X0,
+              y: yC,
+              maxL: LARG,
+              tailleMin: 64,
+            });
+            trou(id, X0, yC, b.w, b.h, t0 + 0.55);
+            revele(b, t0 + 0.6);
+            // Respiration du héros et coups de trait sur les temps
+            [2, 3].forEach((dt) => {
+              pouls(compteur, { scale: 1.035 }, t0 + dt);
+              pouls(trait, { scaleY: 1.9 }, t0 + dt, 0.25);
+              impact(t0 + dt, 2);
+            });
+            compteur.style.transformOrigin = "0% 50%";
+          })();
+
+          // ============ SCÈNE 2 : qui ============
+          (function () {
+            const id = "s2";
+            const t0 = S[id];
+            const nom = { poids: 900, taille: 172, interligne: 0.98, approche: -0.03 };
+            const role = { poids: 500, taille: 72, interligne: 1.14, approche: -0.01 };
+            const lnNom = couper(TX.qui.nom, 900, nom.taille, nom.approche, LARG).length;
+            const lnRole = couper(TX.qui.role, 500, role.taille, role.approche, LARG).length;
+            const lnDate = couper(TX.qui.date, 500, role.taille, role.approche, LARG).length;
+            const pN = Math.round(nom.taille * nom.interligne);
+            const pR = Math.round(role.taille * role.interligne);
+            const hT = lnNom * pN + 18 + lnRole * pR + 44 + 14 + 44 + lnDate * pR;
+            let y = Math.round(clamp(O.y - hT / 2, 480, 1440 - hT));
+            const bN = bloc(id, TX.qui.nom, Object.assign({ x: X0, y, maxL: LARG, heros: true, tailleMin: 96, carton: "qui" }, nom));
+            trou(id, X0, y, bN.w, bN.h, t0 + 0.05);
+            bN.lignes.forEach((l, i) => claqueLigne(bN, i, t0 + 0.12 + i * 0.14, 1.5, 0.42, "back.out(1.8)"));
+            impact(t0 + 0.5, 4);
+            y += bN.h + 18;
+            const bR = bloc(id, TX.qui.role, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64, carton: "qui" }, role));
+            trou(id, X0, y, bR.w, bR.h, t0 + 0.8);
+            revele(bR, t0 + 0.85);
+            y += bR.h + 44;
+            const barre = div("barre", scenes[id], { left: px(X0), top: px(y), width: px(160), height: px(14) });
+            tl.fromTo(barre, { scaleX: 0 }, { scaleX: 1, duration: 0.2, ease: "expo.out" }, t0 + 1.5);
+            impact(t0 + 1.5, 3);
+            y += 14 + 44;
+            const bD = bloc(id, TX.qui.date, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64 }, role));
+            trou(id, X0, y, bD.w, bD.h, t0 + 1.55);
+            revele(bD, t0 + 1.6);
+            // Relances pendant la lecture
+            [3, 4.5].forEach((dt) => {
+              pouls(barre, { scaleX: 1.6 }, t0 + dt);
+              impact(t0 + dt, 2);
+            });
+            impact(t0 + 6.5, 4); // arrivée du cadran
+          })();
+
+          // ============ SCÈNE 3 : 9 h, anonymisation, cadenas ============
+          const HORLOGE = { x: 260, y: 590, echelle: 0.75 };
+          (function () {
+            const id = "s3";
+            const t0 = S[id];
+            const heros = { poids: 900, taille: 230, interligne: 1.0, approche: -0.03 };
+            const bH = bloc(id, TX.matin.heure, Object.assign({ x: 450, y: 470, maxL: 460, heros: true, tailleMin: 120, maxLignes: 1 }, heros));
+            trou(id, 450, 470, bH.w, bH.h, t0 + 0.4);
+            claqueBloc(bH, t0 + 0.5, 2, 0.5, 0.6, 0.35);
+            impact(t0 + 0.5, 4);
+            // Fiche
+            const fy = 790;
+            const fh = 340;
+            const fiche = div("fiche", scenes[id], { left: px(X0), top: px(fy), width: px(LARG), height: px(fh) });
+            mouvement(fiche, { de: { y: 1200 }, a: { y: 0 }, t: t0 + 1.0, d: 0.42, ease: "power4.out" });
+            impact(t0 + 1.0, 3);
+            const largeurs = [0.62, 0.92, 0.78, 0.86, 0.66, 0.9];
+            const lignesF = largeurs.map((w, k) => {
+              const l = div("fiche-ligne", fiche, { left: px(48), top: px(52 + k * 46), width: px(Math.round(704 * w)) });
+              tl.fromTo(l, { scaleX: 0 }, { scaleX: 1, duration: 0.22, ease: "power4.out" }, t0 + 1.2 + k * 0.05);
+              return l;
+            });
+            lignesF[0].style.height = "22px";
+            const masques = [
+              [1, 0.2, 0.34],
+              [2, 0.46, 0.3],
+              [3, 0.04, 0.42],
+              [4, 0.36, 0.28],
+              [5, 0.12, 0.3],
+            ];
+            masques.forEach(([l, x, w], k) => {
+              const m = div("fiche-masque", fiche, {
+                left: px(48 + Math.round(704 * x)),
+                top: px(52 + l * 46 - 6),
+                width: px(Math.round(704 * w)),
+              });
+              tl.fromTo(m, { scaleX: 0 }, { scaleX: 1, duration: 0.16, ease: "expo.out" }, t0 + 1.75 + k * 0.12);
+            });
+            impact(t0 + 2.0, 2);
+            // Cadenas dessiné en SVG, anse carrée
+            const NS = "http://www.w3.org/2000/svg";
+            const cad = document.createElementNS(NS, "svg");
+            cad.setAttribute("width", "150");
+            cad.setAttribute("height", "190");
+            cad.setAttribute("viewBox", "0 0 150 190");
+            Object.assign(cad.style, { position: "absolute", left: px(X0 + LARG - 175), top: px(fy - 118), overflow: "visible" });
+            const anse = document.createElementNS(NS, "path");
+            anse.setAttribute("d", "M35 92 V30 H115 V92");
+            anse.setAttribute("fill", "none");
+            anse.setAttribute("stroke", COUL.blanc);
+            anse.setAttribute("stroke-width", "22");
+            anse.setAttribute("stroke-linejoin", "miter");
+            const corps = document.createElementNS(NS, "rect");
+            corps.setAttribute("x", "0");
+            corps.setAttribute("y", "80");
+            corps.setAttribute("width", "150");
+            corps.setAttribute("height", "110");
+            corps.setAttribute("fill", COUL.blanc);
+            const serrure = document.createElementNS(NS, "rect");
+            serrure.setAttribute("x", "64");
+            serrure.setAttribute("y", "112");
+            serrure.setAttribute("width", "22");
+            serrure.setAttribute("height", "46");
+            serrure.setAttribute("fill", COUL.encre);
+            const gAnse = document.createElementNS(NS, "g");
+            gAnse.appendChild(anse);
+            const gCorps = document.createElementNS(NS, "g");
+            gCorps.appendChild(corps);
+            gCorps.appendChild(serrure);
+            cad.appendChild(gAnse);
+            cad.appendChild(gCorps);
+            scenes[id].appendChild(cad);
+            cad.style.transformOrigin = "50% 100%";
+            claque(cad, t0 + 2.5, { scale: 0.2 }, 0.32, "back.out(2.5)");
+            tl.fromTo(gAnse, { y: -46 }, { y: 0, duration: 0.07, ease: "power4.in" }, t0 + 2.93);
+            pouls(cad, { scaleY: 0.86, scaleX: 1.08 }, t0 + 3.0 - 0.04, 0.3);
+            impact(t0 + 3.0, 6);
+            pouls(cad, { scale: 1.1 }, t0 + 3.75);
+            impact(t0 + 3.75, 2);
+            // Carton
+            const bC = bloc(id, TX.matin.texte, { poids: 500, taille: 76, interligne: 1.14, approche: -0.01, x: X0, y: fy + fh + 50, maxL: LARG, tailleMin: 64 });
+            trou(id, X0, fy + fh + 50, bC.w, bC.h, t0 + 0.5);
+            revele(bC, t0 + 0.55);
+          })();
+
+          // ============ SCÈNE 4 : cinq compétences ============
+          const LIGNES = [];
+          (function () {
+            const id = "s4";
+            const t0 = S[id];
+            const titre = { poids: 900, taille: 88, interligne: 1.02, approche: -0.03, maxLignes: 2 };
+            const lab = { poids: 500, taille: 58, interligne: 1.12, approche: -0.01 };
+            const liste = TX.competences.liste;
+            // Une seule taille pour toutes les étiquettes, chacune sur une ligne.
+            while (lab.taille > 40 && liste.some((s) => largeur(s.replace(/[[\]]/g, ""), 500, lab.taille, lab.approche) > LARG - 100)) {
+              lab.taille -= 1;
+            }
+            const lnT = couper(TX.competences.titre, 900, titre.taille, titre.approche, LARG).length;
+            const hT = lnT * Math.round(titre.taille * titre.interligne);
+            const pasR = 104;
+            const hTot = hT + 64 + (liste.length - 1) * pasR + 72;
+            const y0 = Math.round(clamp(O.y - hTot / 2, 480, 1440 - hTot));
+            const bT = bloc(id, TX.competences.titre, Object.assign({ x: X0, y: y0, maxL: LARG, heros: true, tailleMin: 64 }, titre));
+            trou(id, X0, y0, bT.w, bT.h, t0 + 0.05);
+            bT.lignes.forEach((l, i) => claqueLigne(bT, i, t0 + 0.15 + i * 0.12, 1.6, 0.38, "back.out(2)"));
+            impact(t0 + 0.5, 4);
+            const pas = PLAN.pasLignes;
+            // Les lignes glissent depuis les bords du carré texte, jamais au-delà.
+            const fenetre = div("", scenes[id], {
+              position: "absolute",
+              left: px(CARRE.x0),
+              top: px(y0 + hT + 40),
+              width: px(CARRE.x1 - CARRE.x0),
+              height: px(liste.length * pasR + 40),
+              overflow: "hidden",
+            });
+            liste.forEach((texte, k) => {
+              const y = y0 + hT + 64 + k * pasR;
+              const rangee = div("rangee", fenetre, { left: px(X0 - CARRE.x0), top: px(24 + k * pasR), width: px(LARG), height: px(72) });
+              const tuile = div("tuile tuile-cadre", rangee, { left: "0px", top: "0px" });
+              const rempl = div("remplissage", tuile, { transformOrigin: "50% 100%" });
+              const bL = bloc(id, texte, Object.assign({ x: 100, y: Math.round(36 - (lab.taille * lab.interligne) / 2), maxL: LARG - 100, tailleMin: 40, parent: rangee, maxLignes: 2 }, lab));
+              const tk = t0 + 1.25 + k * pas;
+              trou(id, X0, y - 4, LARG, 80, tk - 0.08);
+              allume(rangee, tk);
+              const dir = k % 2 === 0 ? -1 : 1;
+              mouvement(rangee, { de: { x: dir * 900 }, a: { x: 0 }, t: tk, d: 0.35, ease: "power4.out" });
+              tl.fromTo(rempl, { scaleY: 0 }, { scaleY: 1, duration: 0.14, ease: "expo.out" }, tk + 0.22);
+              pouls(tuile, { scale: 1.3 }, tk + 0.22, 0.32);
+              impact(tk + 0.25, 3);
+              LIGNES.push({ texte, tuile });
+              void bL;
+            });
+            // Vague sur les tuiles allumées, puis relance du titre
+            const tuiles = LIGNES.map((l) => l.tuile);
+            const tv = t0 + 1.25 + liste.length * pas + 0.5;
+            [tv, tv + 1.25].forEach((t, n) => {
+              if (t > FIN(id) - 0.4) return;
+              tuiles.forEach((tu, k) => pouls(tu, { scale: 1.2 }, t + k * 0.06));
+              impact(t, 2);
+            });
+            const tt = FIN(id) - 1.0;
+            pouls(bT.lignes[0], { scale: 1.06 }, tt);
+            impact(tt, 2);
+          })();
+
+          // ============ SCÈNE 5 : la sixième ============
+          (function () {
+            const id = "s5";
+            const t0 = S[id];
+            const carton = { poids: 500, taille: 84, interligne: 1.14, approche: -0.01 };
+            const lab = { poids: 900, taille: 96, interligne: 1.02, approche: -0.03 };
+            const lnC = couper(TX.sixieme.texte, 500, carton.taille, carton.approche, LARG).length;
+            const lnL = couper(TX.sixieme.ligne, 900, lab.taille, lab.approche, LARG).length;
+            const hC = lnC * Math.round(carton.taille * carton.interligne);
+            const hL = lnL * Math.round(lab.taille * lab.interligne);
+            const hTot = hC + 70 + 72 + 56 + hL;
+            let y = Math.round(clamp(O.y - hTot / 2, 480, 1440 - hTot));
+            const bC = bloc(id, TX.sixieme.texte, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64 }, carton));
+            trou(id, X0, y, bC.w, bC.h, t0 + 0.05);
+            revele(bC, t0 + 0.12);
+            y += hC + 70;
+            // Tuiles qui volent depuis les bords et forment la sixième ligne
+            const N = 10;
+            const pasT = Math.floor((LARG + 8) / N);
+            const yRang = y;
+            trou(id, X0, yRang - 4, pasT * N, 80, t0 + 0.7, 0.18);
+            for (let k = 0; k < N; k++) {
+              const x = X0 + k * pasT;
+              const vol = div("tuile", scenes[id], { left: px(x), top: px(yRang) });
+              const tu = div("tuile tuile-vif", vol, { left: "0px", top: "0px" });
+              const rempl = div("remplissage", tu, { transformOrigin: "0% 50%" });
+              const cote = k % 4;
+              const r = hash3(k, 5, 9);
+              const de =
+                cote === 0
+                  ? { x: -x - 300, y: (r - 0.5) * 900 }
+                  : cote === 1
+                    ? { x: (r - 0.5) * 700, y: -yRang - 300 }
+                    : cote === 2
+                      ? { x: W - x + 300, y: (r - 0.5) * 900 }
+                      : { x: (r - 0.5) * 700, y: H - yRang + 300 };
+              const tk = t0 + 0.75 + k * 0.045;
+              allume(vol, tk);
+              mouvement(vol, { de, a: { x: 0, y: 0 }, t: tk, d: 0.5, ease: "power4.out" });
+              tl.fromTo(rempl, { scaleX: 0 }, { scaleX: 1, duration: 0.1, ease: "power2.out" }, t0 + 1.5 + k * 0.05);
+              pouls(tu, { y: -16 }, t0 + 3.5 + k * 0.04);
+            }
+            impact(t0 + 1.5, 4);
+            y += 72 + 56;
+            const bL = bloc(id, TX.sixieme.ligne, Object.assign({ x: X0, y, maxL: LARG, heros: true, tailleMin: 64 }, lab));
+            trou(id, X0, y, bL.w, bL.h, t0 + 2.2);
+            bL.lignes.forEach((l, i) => claqueLigne(bL, i, t0 + 2.25 + i * 0.1, 1.8, 0.35, "back.out(2)"));
+            impact(t0 + 2.5, 5);
+            impact(t0 + 3.5, 2);
+          })();
+
+          // ============ SCÈNE 6 : 17 h, la pile ============
+          (function () {
+            const id = "s6";
+            const t0 = S[id];
+            const heros = { poids: 900, taille: 230, interligne: 1.0, approche: -0.03 };
+            const bH = bloc(id, TX.soir.heure, Object.assign({ x: 450, y: 470, maxL: 460, heros: true, tailleMin: 120, maxLignes: 1 }, heros));
+            trou(id, 450, 470, bH.w, bH.h, t0 + 0.9);
+            claqueBloc(bH, t0 + 1.0, 2.1, 1, 0.6, 0.35);
+            impact(t0 + 1.0, 6);
+            // Six lignes de tuiles qui se resserrent en pile
+            const n = TX.competences.liste.length + 1;
+            const pasLarge = 92;
+            const pasSerre = 76;
+            const yP = 790;
+            const rangs = [];
+            for (let k = 0; k < n; k++) {
+              const r = div("rangee", scenes[id], { left: px(X0), top: px(yP + k * pasLarge), width: px(240), height: px(72) });
+              div("tuile tuile-ocre", r, { left: "0px", top: "0px" });
+              const b = div("barre", r, { left: px(84), top: px(27), width: px(150), height: px(18), background: COUL.bord });
+              tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: 0.2, ease: "power4.out" }, t0 + 0.15 + k * 0.04);
+              tl.fromTo(b, { scaleX: 1 }, { scaleX: 0, duration: 0.24, ease: "power4.in", immediateRender: false }, t0 + 1.5 + k * 0.02);
+              tl.fromTo(r, { y: 0 }, { y: -k * (pasLarge - pasSerre), duration: 0.32, ease: "power4.inOut", immediateRender: false }, t0 + 1.5);
+              pouls(r.firstChild, { scale: 1.18 }, t0 + 2.0 + k * 0.03);
+              rangs.push(r);
+            }
+            impact(t0 + 2.0, 4);
+            // Phrase à droite de la pile
+            const xP = 380;
+            const bP = bloc(id, TX.soir.texte, { poids: 500, taille: 72, interligne: 1.14, approche: -0.01, x: xP, y: 0, maxL: 910 - xP, tailleMin: 64 });
+            const yPh = Math.round(yP + (n * pasSerre) / 2 - bP.h / 2);
+            bP.el.style.top = px(yPh);
+            trou(id, xP, yPh, bP.w, bP.h, t0 + 0.4);
+            revele(bP, t0 + 0.45);
+            rangs.forEach((r, k) => pouls(r.firstChild, { y: -14 }, t0 + 2.75 + k * 0.03, 0.28));
+            impact(t0 + 2.75, 2);
+          })();
+
+          // ============ SCÈNE 7 : résultat, flash blanc et dix tuiles ============
+          const S7 = {};
+          (function () {
+            const id = "s7";
+            const t0 = S[id];
+            const intro = { poids: 500, taille: 84, interligne: 1.14, approche: -0.01 };
+            const brut = TX.resultat.chiffre;
+            const m = /^\[(\d+(?:[.,]\d+)?\s?\S+)\s+([^\]]+)\](.*)$/.exec(brut);
+            const texteHeros = m ? "[" + m[1] + "]" : brut;
+            const texteSuite = m ? "[" + m[2] + "]" + m[3] : "";
+            const lnI = couper(TX.resultat.intro, 500, intro.taille, intro.approche, LARG).length;
+            const hI = lnI * Math.round(intro.taille * intro.interligne);
+            const heros = { poids: 900, taille: 300, interligne: 1.0, approche: -0.03 };
+            const suite = { poids: 900, taille: 104, interligne: 1.04, approche: -0.03 };
+            const hTot = hI + 60 + heros.taille + 16 + Math.round(suite.taille * suite.interligne);
+            let y = Math.round(clamp(O.y - hTot / 2, 480, 1440 - hTot));
+            const bI = bloc(id, TX.resultat.intro, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64 }, intro));
+            trou(id, X0, y, bI.w, bI.h, t0 + 0.2);
+            revele(bI, t0 + 0.25);
+            y += hI + 60;
+            const bH = bloc(id, texteHeros, Object.assign({ x: X0, y, maxL: LARG, heros: true, tailleMin: 120, maxLignes: 1, carton: "resultat" }, heros));
+            y += bH.h + 16;
+            let bS = null;
+            if (texteSuite) {
+              bS = bloc(id, texteSuite, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64, carton: "resultat", serre: true }, suite));
+            }
+            const yFin = bS ? y + bS.h : y;
+            const hautHeros = bH.y;
+            trou(id, X0, hautHeros, Math.max(bH.w, bS ? bS.w : 0), yFin - hautHeros, t0 + 1.45, 0.3);
+            bH.el.style.transformOrigin = "40% 55%";
+            allume(bH.el, t0 + 1.5);
+            tl.fromTo(bH.el, { scale: 0.2 }, { scale: 1, duration: 0.5, ease: "power3.inOut" }, t0 + 1.5);
+            impact(t0 + 1.5, 8);
+            if (bS) revele(bS, t0 + 1.75, 0.06, 0.34);
+            impact(t0 + 2.0, 3);
+            [2.5, 3.25].forEach((dt) => {
+              if (t0 + dt > FIN(id) - 0.3) return;
+              pouls(bH.el, { scale: 1.04 }, t0 + dt);
+              impact(t0 + dt, 2);
+            });
+            const nb = parseInt((m ? m[1] : brut).replace(/\D+/g, ""), 10);
+            S7.nombre = clamp(isNaN(nb) ? 10 : nb, 3, 16);
+            S7.cible = { x: MONDE[id][0] + X0 + bH.w * 0.4, y: MONDE[id][1] + bH.y + bH.h * 0.55 };
+            S7.t0 = t0;
+          })();
+
+          // ============ SCÈNE 8 : un rendez-vous par mois ============
+          (function () {
+            const id = "s8";
+            const t0 = S[id];
+            const carton = { poids: 500, taille: 84, interligne: 1.14, approche: -0.01 };
+            const n = clamp(TX.suite.tuiles | 0 || 12, 1, 16);
+            const lnC = couper(TX.suite.texte, 500, carton.taille, carton.approche, LARG).length;
+            const hC = lnC * Math.round(carton.taille * carton.interligne);
+            const hTot = hC + 90 + 48;
+            let y = Math.round(clamp(O.y - hTot / 2, 480, 1440 - hTot));
+            const bC = bloc(id, TX.suite.texte, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 64 }, carton));
+            trou(id, X0, y, bC.w, bC.h, t0 + 0.05);
+            revele(bC, t0 + 0.1, 0.06, 0.32);
+            y += hC + 90;
+            const pasP = Math.min(66, Math.floor((LARG + 18) / n));
+            trou(id, X0, y - 4, pasP * n, 56, t0 + 0.35, 0.15);
+            for (let k = 0; k < n; k++) {
+              const p = div("petite", scenes[id], { left: px(X0 + k * pasP), top: px(y) });
+              const r = div("remplissage", p, { inset: "-5px", transformOrigin: "50% 100%" });
+              claque(p, t0 + 0.4 + k * 0.02, { scale: 0 }, 0.25, "back.out(2.5)");
+              const tk = t0 + 0.75 + k * 0.2;
+              tl.fromTo(r, { scaleY: 0 }, { scaleY: 1, duration: 0.12, ease: "expo.out" }, tk);
+              pouls(p, { scale: 1.35 }, tk, 0.28);
+              pouls(p, { y: -12 }, t0 + 0.75 + n * 0.2 + 0.35 + k * 0.03, 0.28);
+              if (k % 3 === 0) impact(tk, 2);
+            }
+          })();
+
+          // ============ SCÈNE 9 : fin ============
+          (function () {
+            const id = "s9";
+            const t0 = S[id];
+            const nom = { poids: 900, taille: 150, interligne: 0.98, approche: -0.03 };
+            const role = { poids: 500, taille: 56, interligne: 1.14, approche: 0 };
+            const appel = { poids: 500, taille: 68, interligne: 1.14, approche: -0.01 };
+            const pad = { x: 40, y: 36 };
+            const lnN = couper(TX.fin.nom, 900, nom.taille, nom.approche, LARG).length;
+            const lnA = couper(TX.fin.appel, 500, appel.taille, appel.approche, LARG - 2 * pad.x).length;
+            const hN = lnN * Math.round(nom.taille * nom.interligne);
+            const hA = lnA * Math.round(appel.taille * appel.interligne) + 2 * pad.y;
+            const hTot = hN + 24 + Math.round(role.taille * role.interligne) + 84 + hA;
+            let y = Math.round(clamp(O.y - hTot / 2, 480, 1440 - hTot));
+            const bN = bloc(id, TX.fin.nom, Object.assign({ x: X0, y, maxL: LARG, heros: true, tailleMin: 96 }, nom));
+            trou(id, X0, y, bN.w, bN.h, t0 + 0.05);
+            bN.lignes.forEach((l, i) => claqueLigne(bN, i, t0 + 0.15 + i * 0.12, 1.5, 0.4, "back.out(1.8)"));
+            impact(t0 + 0.5, 4);
+            y += bN.h + 24;
+            const bR = bloc(id, TX.fin.titre, Object.assign({ x: X0, y, maxL: LARG, tailleMin: 40 }, role));
+            trou(id, X0, y, bR.w, bR.h, t0 + 0.65);
+            revele(bR, t0 + 0.7);
+            y += bR.h + 84;
+            const plaque = div("plaque", scenes[id], { left: px(X0), top: px(y) });
+            const bA = bloc(id, TX.fin.appel, Object.assign({ x: pad.x, y: pad.y, maxL: LARG - 2 * pad.x, tailleMin: 64, parent: plaque }, appel));
+            plaque.style.width = px(Math.ceil(bA.w) + 2 * pad.x);
+            plaque.style.height = px(bA.h + 2 * pad.y);
+            trou(id, X0, y, bA.w + 2 * pad.x, bA.h + 2 * pad.y, t0 + 1.15);
+            tl.fromTo(plaque, { scaleX: 0 }, { scaleX: 1, duration: 0.25, ease: "power4.out" }, t0 + 1.2);
+            revele(bA, t0 + 1.35, 0.06, 0.32);
+            impact(t0 + 1.5, 3);
+            impact(t0 + 2.5, 2);
+          })();
+
+          // ============ Flash blanc à l'entrée de la scène 7 ============
+          const flash = document.getElementById("flash");
+          tl.fromTo(flash, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "expo.in" }, S.s7 - 0.12);
+          tl.to(flash, { opacity: 0, duration: 0.18, ease: "power2.out" }, S.s7);
+
+          // ============ Caméra ============
+          const C = ORDRE.map((id) => MONDE[id]);
+          const clesX = [[0, C[0][0]]];
+          const clesY = [[0, C[0][1]]];
+          const OV = 0.025;
+          for (let k = 1; k < ORDRE.length; k++) {
+            const t = S[ORDRE[k]];
+            const [ax, ay] = C[k - 1];
+            const [bx, by] = C[k];
+            if (ORDRE[k] === "s7") {
+              clesX.push([t, ax], [t, bx]);
+              clesY.push([t, ay], [t, by]);
+              continue;
+            }
+            clesX.push([t - 0.12, ax], [t + 0.12, bx + OV * (bx - ax), "expo.inOut"], [t + 0.45, bx, "power2.inOut"]);
+            clesY.push([t - 0.12, ay], [t + 0.12, by + OV * (by - ay), "expo.inOut"], [t + 0.45, by, "power2.inOut"]);
+          }
+          const camX = piste(clesX);
+          const camY = piste(clesY);
+          const camS = piste([
+            [0, 1.1],
+            [0.7, 1.0, "expo.out"],
+            [S.s2, 1.025, "sine.inOut"],
+            [S.s2 + 0.3, 1.0, "power2.out"],
+            [S.s3, 1.035, "sine.inOut"],
+            [S.s3 + 0.3, 1.03, "power2.out"],
+            [S.s4, 1.0, "sine.inOut"],
+            [S.s4 + 0.3, 1.0, "power2.out"],
+            [S.s5 - 0.1, 1.07, "sine.inOut"],
+            [S.s5 + 0.3, 1.03, "power2.out"],
+            [S.s6, 1.0, "sine.inOut"],
+            [S.s6 + 0.3, 1.0, "power2.out"],
+            [S.s7 - 0.001, 1.02, "sine.inOut"],
+            [S.s7, 1.16],
+            [S.s7 + 0.4, 0.985, "expo.out"],
+            [S.s7 + 0.8, 1.0, "sine.inOut"],
+            [S.s8, 1.03, "sine.inOut"],
+            [S.s8 + 0.3, 1.0, "power2.out"],
+            [S.s9, 1.03, "sine.inOut"],
+            [S.s9 + 0.3, 1.03, "power2.out"],
+            [S.s9 + 4, 1.0, "sine.inOut"],
+          ]);
+          const ampDerive = piste([
+            [0, 1],
+            [S.s9, 1],
+            [S.s9 + 2.5, 0.35, "sine.inOut"],
+          ]);
+          function derive(t) {
+            const a = ampDerive(t);
+            return {
+              x: (7 * Math.sin(0.9 * t) + 4 * Math.sin(2.3 * t + 1)) * a,
+              y: (6 * Math.sin(0.7 * t + 2) + 3 * Math.sin(1.9 * t)) * a,
+            };
+          }
+          function camera(t) {
+            const d = derive(t);
+            return { x: camX(t) + d.x, y: camY(t) + d.y, s: camS(t) };
+          }
+          function secousse(t) {
+            let x = 0;
+            let y = 0;
+            IMPACTS.forEach((im, i) => {
+              const u = t - im.t;
+              if (u < 0 || u > 0.4) return;
+              const e = im.a * Math.exp(-u / 0.09);
+              x += e * Math.sin(2 * Math.PI * 17 * u + i);
+              y += e * Math.cos(2 * Math.PI * 13 * u + 2 * i);
+            });
+            const n = Math.hypot(x, y);
+            if (n > 8) {
+              x *= 8 / n;
+              y *= 8 / n;
+            }
+            return { x, y };
+          }
+          function pulsation(t) {
+            let p = 0;
+            IMPACTS.forEach((im) => {
+              const u = t - im.t;
+              if (u < 0 || u > 0.6) return;
+              p += Math.min(1, im.a / 6) * Math.exp(-u / 0.14);
+            });
+            return Math.min(1, p);
+          }
+
+          // ============ Mosaïque (canvas, fonction pure du temps) ============
+          const cv = document.getElementById("mosaique");
+          const g = cv.getContext("2d");
+          const PAS = 84;
+          const TUILE = 72;
+          const TENUE = DUREE - 2;
+          const remplissage = piste([
+            [0, 0.36],
+            [S.s7 - 0.001, 0.36],
+            [S.s7, 1],
+            [S.s8 - 0.02, 1],
+            [S.s8, 0.36],
+            [S.s9, 0.36],
+            [S.s9 + 3, 0.26, "sine.inOut"],
+          ]);
+          const probaTemps = (t) => (t >= TENUE ? 0 : t >= S.s9 ? 0.045 : 0.08);
+          const probaContre = (t) => (t >= S.s9 ? 0 : 0.035);
+          function deriveFond(t) {
+            const T = S.s9;
+            const v0 = { x: -24, y: -10 };
+            const v1 = { x: -6, y: -2.5 };
+            const tau = 1.2;
+            if (t <= T) return { x: v0.x * t, y: v0.y * t };
+            const u = t - T;
+            const k = tau * (1 - Math.exp(-u / tau));
+            return { x: v0.x * T + v1.x * u + (v0.x - v1.x) * k, y: v0.y * T + v1.y * u + (v0.y - v1.y) * k };
+          }
+          function versEcran(px_, py_, cam, sh) {
+            return { x: O.x + cam.s * (px_ - cam.x - O.x) + sh.x, y: O.y + cam.s * (py_ - cam.y - O.y) + sh.y };
+          }
+          // Dix tuiles de la scène 7 : cellules choisies autour du héros, en coordonnées de fond.
+          const ancres = [
+            [150, 330], [520, 250], [900, 360], [980, 760], [930, 1560],
+            [560, 1700], [170, 1620], [80, 1180], [700, 1480], [300, 1500],
+            [860, 1130], [120, 820], [420, 1820], [1000, 1880], [40, 420], [760, 160],
+          ];
+          let cellules7 = null;
+          function cellulesS7() {
+            if (cellules7) return cellules7;
+            const ta = S7.t0 + 0.6;
+            const cam = camera(ta);
+            const bs = 1 + (cam.s - 1) * 0.5;
+            const bd = deriveFond(ta);
+            const Bx = cam.x * 0.35 + bd.x;
+            const By = cam.y * 0.35 + bd.y;
+            cellules7 = ancres.slice(0, S7.nombre).map(([X, Y]) => {
+              const qx = (X - O.x) / bs + Bx + O.x;
+              const qy = (Y - O.y) / bs + By + O.y;
+              return { i: Math.round(qx / PAS - 0.5), j: Math.round(qy / PAS - 0.5) };
+            });
+            return cellules7;
+          }
+          function dessinerMosaique(t, cam, sh) {
+            g.fillStyle = COUL.encre;
+            g.fillRect(0, 0, W, H);
+            const bs = 1 + (cam.s - 1) * 0.5;
+            const bd = deriveFond(t);
+            const Bx = cam.x * 0.35 + bd.x;
+            const By = cam.y * 0.35 + bd.y;
+            const qx0 = (0 - O.x - sh.x) / bs + Bx + O.x;
+            const qx1 = (W - O.x - sh.x) / bs + Bx + O.x;
+            const qy0 = (0 - O.y - sh.y) / bs + By + O.y;
+            const qy1 = (H - O.y - sh.y) / bs + By + O.y;
+            const i0 = Math.floor(qx0 / PAS) - 1;
+            const i1 = Math.ceil(qx1 / PAS) + 1;
+            const j0 = Math.floor(qy0 / PAS) - 1;
+            const j1 = Math.ceil(qy1 / PAS) + 1;
+            const remp = remplissage(t);
+            const b = Math.floor(t / 0.5 + 1e-6);
+            const age = t - b * 0.5;
+            const q = Math.floor(t / 0.25 + 1e-6);
+            const ageQ = t - q * 0.25;
+            const pb = b >= 1 ? probaTemps(t) : 0;
+            const pq = q % 2 === 1 ? probaContre(t) : 0;
+            const pul = pulsation(t);
+            // Trous à l'écran
+            const trous = [];
+            TROUS.forEach((tr) => {
+              if (t < tr.t0 - 0.05 || t > tr.t1) return;
+              const a = versEcran(tr.x0, tr.y0, cam, sh);
+              const c = versEcran(tr.x1, tr.y1, cam, sh);
+              trous.push({ x0: a.x, y0: a.y, x1: c.x, y1: c.y, cx: (a.x + c.x) / 2, cy: (a.y + c.y) / 2, hw: (c.x - a.x) / 2, hh: (c.y - a.y) / 2, t0: tr.t0, v: tr.v });
+            });
+            const c7 = t >= S7.t0 + 0.5 && t < S7.t0 + 1.6 ? cellulesS7() : null;
+            for (let i = i0; i <= i1; i++) {
+              for (let j = j0; j <= j1; j++) {
+                let visible = hash3(i, j, 11) < remp;
+                let couleur = hash3(i, j, 23) < 0.3 ? COUL.vif : COUL.bord;
+                let ech = 1;
+                if (pb > 0 && age < 0.34 && hash3(i, j, b + 1000) < pb) {
+                  visible = true;
+                  couleur = COUL.vif;
+                  ech *= 1 + 0.24 * Math.exp(-age / 0.1);
+                }
+                if (pq > 0 && ageQ < 0.2 && hash3(i, j, q + 5000) < pq) {
+                  visible = true;
+                  couleur = COUL.vif;
+                  ech *= 1 + 0.16 * Math.exp(-ageQ / 0.08);
+                }
+                if (c7 && c7.some((c) => c.i === i && c.j === j)) continue;
+                if (!visible) continue;
+                ech *= 1 + 0.12 * pul;
+                if (hash3(i, j, 31) < 0.45 * pul) couleur = COUL.vif;
+                const X = O.x + bs * (i * PAS + PAS / 2 - Bx - O.x) + sh.x;
+                const Y = O.y + bs * (j * PAS + PAS / 2 - By - O.y) + sh.y;
+                // Une tuile qui touche une zone de texte s'efface en entier (aucune miette).
+                let f = 1;
+                const demi = (TUILE * bs * ech) / 2 + 10;
+                for (const tr of trous) {
+                  if (X + demi < tr.x0 || X - demi > tr.x1 || Y + demi < tr.y0 || Y - demi > tr.y1) continue;
+                  const dc = Math.max(Math.abs(X - tr.cx) / Math.max(1, tr.hw), Math.abs(Y - tr.cy) / Math.max(1, tr.hh));
+                  const ouv = clamp((t - tr.t0 - dc * tr.v) / 0.12, 0, 1);
+                  f = Math.min(f, 1 - ouv);
+                }
+                if (f <= 0.02) continue;
+                const cote = Math.round(TUILE * bs * ech * f);
+                g.fillStyle = couleur;
+                g.fillRect(Math.round(X - cote / 2), Math.round(Y - cote / 2), cote, cote);
+              }
+            }
+            if (c7) dessinerDix(t, cam, sh, bs, Bx, By, c7);
+          }
+          // Les dix tuiles s'allument en ocre puis convergent vers le héros.
+          function dessinerDix(t, cam, sh, bs, Bx, By, c7) {
+            const t0 = S7.t0;
+            const cible = versEcran(S7.cible.x, S7.cible.y, cam, sh);
+            const conv = gsap.parseEase("power3.in");
+            const posAt = (k, tt) => {
+              const c = c7[k];
+              const X = O.x + bs * (c.i * PAS + PAS / 2 - Bx - O.x) + sh.x;
+              const Y = O.y + bs * (c.j * PAS + PAS / 2 - By - O.y) + sh.y;
+              const p = clamp((tt - (t0 + 1.05 + k * 0.012)) / 0.45, 0, 1);
+              const e = conv(p);
+              return { x: lerp(X, cible.x, e), y: lerp(Y, cible.y, e), s: lerp(1, 0.55, e), p };
+            };
+            c7.forEach((c, k) => {
+              const tk = t0 + 0.6 + k * 0.045;
+              if (t < tk) {
+                const P = posAt(k, t);
+                const cote = TUILE * bs;
+                g.fillStyle = hash3(c.i, c.j, 23) < 0.3 ? COUL.vif : COUL.bord;
+                g.fillRect(P.x - cote / 2, P.y - cote / 2, cote, cote);
+                return;
+              }
+              const P = posAt(k, t);
+              if (P.p >= 1) return;
+              const pop = 1 + 0.3 * Math.exp(-(t - tk) / 0.08);
+              g.fillStyle = COUL.ocre;
+              if (P.p > 0) {
+                for (let s = 6; s >= 1; s--) {
+                  const Q = posAt(k, t - (s * (1 / 30)) / 6);
+                  g.globalAlpha = 0.16;
+                  const cq = TUILE * bs * Q.s;
+                  g.fillRect(Q.x - cq / 2, Q.y - cq / 2, cq, cq);
+                }
+                g.globalAlpha = 1;
+              }
+              const cote = TUILE * bs * P.s * (P.p > 0 ? 1 : pop);
+              g.fillRect(P.x - cote / 2, P.y - cote / 2, cote, cote);
+            });
+          }
+
+          // ============ Horloge (SVG dessiné en code) ============
+          const NS = "http://www.w3.org/2000/svg";
+          const horloge = document.getElementById("horloge");
+          const svg = document.createElementNS(NS, "svg");
+          svg.setAttribute("width", "420");
+          svg.setAttribute("height", "420");
+          svg.setAttribute("viewBox", "-210 -210 420 420");
+          const el = (nom, attrs, parent) => {
+            const e = document.createElementNS(NS, nom);
+            Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+            (parent || svg).appendChild(e);
+            return e;
+          };
+          el("circle", { cx: 0, cy: 0, r: 196, fill: COUL.encre, stroke: COUL.vif, "stroke-width": 18 });
+          const graduations = [];
+          for (let h = 0; h < 12; h++) {
+            const quart = h % 3 === 0;
+            graduations.push(
+              el("rect", {
+                x: quart ? -8 : -6,
+                y: -174,
+                width: quart ? 16 : 12,
+                height: quart ? 48 : 30,
+                fill: quart ? COUL.blanc : COUL.vif,
+                transform: "rotate(" + h * 30 + ")",
+              }),
+            );
+          }
+          const fantomes = [];
+          for (let k = 0; k < 7; k++) {
+            fantomes.push(el("rect", { x: -9, y: -150, width: 18, height: 172, fill: COUL.ocre, opacity: 0.14 }));
+          }
+          const aiguille = el("rect", { x: -10, y: -152, width: 20, height: 176, fill: COUL.ocre });
+          el("rect", { x: -18, y: -18, width: 36, height: 36, fill: COUL.ocre });
+          horloge.appendChild(svg);
+          const heure = (s) => {
+            const n = parseInt(String(s).replace(/\D+/g, " ").trim().split(" ")[0], 10);
+            return isNaN(n) ? 0 : n;
+          };
+          const hMatin = heure(TX.matin.heure) % 12;
+          const hSoir = heure(TX.soir.heure) % 12;
+          const aMatin = hMatin * 30;
+          const delta = (((hSoir - hMatin) * 30) % 360 + 360) % 360 + 360;
+          const angle = piste([
+            [S.s2 + 6.05, 0],
+            [S.s3 - 0.1, 0],
+            [S.s3 + 0.5, aMatin, "back.out(1.15)"],
+            [S.s6 + 0.5, aMatin],
+            [S.s6 + 1.0, aMatin + delta, "back.out(0.6)"],
+          ]);
+          const DX = 1080;
+          const clX = piste([
+            [S.s2 + 6.05, 1450],
+            [S.s2 + 6.5, 860, "back.out(1.6)"],
+            [S.s3 - 0.12, 860],
+            [S.s3 + 0.3, HORLOGE.x, "expo.inOut"],
+            [S.s4 - 0.12, HORLOGE.x],
+            [S.s4 + 0.12, HORLOGE.x - DX, "expo.inOut"],
+            [S.s6 - 0.12, HORLOGE.x - DX],
+            [S.s6 + 0.12, HORLOGE.x + 26, "expo.inOut"],
+            [S.s6 + 0.45, HORLOGE.x, "power2.inOut"],
+          ]);
+          const clY = piste([
+            [S.s2 + 6.05, 1680],
+            [S.s3 - 0.12, 1680],
+            [S.s3 + 0.3, HORLOGE.y, "expo.inOut"],
+          ]);
+          const clS = piste([
+            [S.s2 + 6.05, 0.55],
+            [S.s3 - 0.12, 0.55],
+            [S.s3 + 0.3, HORLOGE.echelle, "back.out(1.4)"],
+          ]);
+          function dessinerHorloge(t, sh) {
+            const vis = (t >= S.s2 + 6.05 && t < S.s4 + 0.2) || (t >= S.s6 - 0.15 && t < S.s7);
+            horloge.style.visibility = vis ? "visible" : "hidden";
+            if (!vis) return;
+            horloge.style.transform =
+              "translate(" + (clX(t) - 210 + sh.x) + "px," + (clY(t) - 210 + sh.y) + "px) scale(" + clS(t) + ")";
+            const a = angle(t);
+            aiguille.setAttribute("transform", "rotate(" + a + ")");
+            const vitesse = Math.abs(a - angle(t - 1 / 30));
+            fantomes.forEach((f, k) => {
+              if (vitesse < 6) {
+                f.setAttribute("opacity", "0");
+                return;
+              }
+              f.setAttribute("opacity", "0.14");
+              f.setAttribute("transform", "rotate(" + angle(t - ((k + 1) / 7) * (1 / 30)) + ")");
+            });
+            graduations.forEach((gr, h) => {
+              const quart = h % 3 === 0;
+              let c = quart ? COUL.blanc : COUL.vif;
+              if (h === hMatin && t >= S.s3 + 0.5 && t < S.s6 + 0.5) c = COUL.ocre;
+              if (h === hSoir && t >= S.s6 + 1.0) c = COUL.ocre;
+              gr.setAttribute("fill", c);
+            });
+          }
+
+          // ============ Rendu par image ============
+          const monde = document.getElementById("monde");
+          const cadre = document.getElementById("cadre");
+          const flouCadre = document.getElementById("flou-cadre-noeud");
+          function rendu(t) {
+            const cam = camera(t);
+            const sh = secousse(t);
+            monde.style.transform =
+              "translate(" + (O.x + sh.x) + "px," + (O.y + sh.y) + "px) scale(" + cam.s + ") translate(" +
+              -(cam.x + O.x) + "px," + -(cam.y + O.y) + "px)";
+            // Flou de mouvement des whip-pans, proportionnel à la vitesse de la caméra
+            const av = camera(t - 1 / 30);
+            const sx = Math.min(44, (Math.abs(cam.x - av.x) * cam.s) / 4.5);
+            const sy = Math.min(44, (Math.abs(cam.y - av.y) * cam.s) / 4.5);
+            if (sx + sy > 0.6 && Math.abs(cam.x - av.x) + Math.abs(cam.y - av.y) < 900) {
+              flouCadre.setAttribute("stdDeviation", sx.toFixed(2) + " " + sy.toFixed(2));
+              cadre.style.filter = "url(#flou-cadre)";
+            } else cadre.style.filter = "none";
+            dessinerMosaique(t, cam, sh);
+            dessinerHorloge(t, sh);
+          }
+          const horlogeT = { t: 0 };
+          tl.fromTo(
+            horlogeT,
+            { t: 0 },
+            { t: DUREE, duration: DUREE, ease: "none", onUpdate: () => rendu(horlogeT.t) },
+            0,
+          );
+          rendu(0);
+          tl.seek(0);
+          // Données lues par scripts/audit.mjs (aucun effet sur le rendu).
+          window.__audit = {
+            S,
+            duree: DUREE,
+            tenue: TENUE,
+            impacts: IMPACTS.map((i) => i.t),
+            temps: Array.from({ length: Math.floor(DUREE * 2) }, (_, b) => b * 0.5).filter((t) => t >= 0.5 && probaTemps(t) > 0),
+          };
+          window.__timelines["main"] = tl;
+        }
+      })();
+    </script>
+  </body>
+</html>

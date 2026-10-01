@@ -1,0 +1,47 @@
+{
+  "_mode_emploi": "Seul fichier à modifier pour un nouveau cas client. Les crochets [ ] passent un mot clé en ocre et disparaissent à l'affichage. Après modification : npm run contenu (lancé aussi automatiquement par npm run check et npm run render).",
+  "accroche": {
+    "chiffre": "[10 h]",
+    "texte": "gagnées chaque semaine, d’après Rosalie."
+  },
+  "qui": {
+    "nom": "Rosalie Bojoly,",
+    "role": "coach, fondatrice de Quallista.",
+    "date": "Le 8 septembre, une journée de formation IA avec moi."
+  },
+  "matin": {
+    "heure": "[9 h]",
+    "texte": "On protège ses données avant le premier cas réel."
+  },
+  "competences": {
+    "titre": "[5 compétences] Claude installées :",
+    "liste": [
+      "comptes rendus de coaching",
+      "restitutions DISC",
+      "synthèses de questionnaires",
+      "relances de prospects",
+      "posts LinkedIn dans sa voix"
+    ]
+  },
+  "sixieme": {
+    "texte": "La sixième, elle l’a fabriquée elle-même :",
+    "ligne": "[préparation d’entretiens]."
+  },
+  "soir": {
+    "heure": "[17 h]",
+    "texte": "Elle repart avec ses outils en main."
+  },
+  "resultat": {
+    "intro": "Depuis, elle estime gagner",
+    "chiffre": "[10 h par semaine]."
+  },
+  "suite": {
+    "texte": "Et elle continue : un rendez-vous par mois.",
+    "tuiles": 12
+  },
+  "fin": {
+    "nom": "Antoine Contino",
+    "titre": "formateur IA",
+    "appel": "Audit IA de 30 min : lien en commentaire"
+  }
+}

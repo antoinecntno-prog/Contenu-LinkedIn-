@@ -1,0 +1,15 @@
+{
+  "name": "linkedin-cas-quallista",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "contenu": "node scripts/contenu.mjs",
+    "predev": "node scripts/contenu.mjs",
+    "dev": "npx --yes hyperframes@0.8.103 preview",
+    "precheck": "node scripts/contenu.mjs",
+    "check": "npx --yes hyperframes@0.8.103 check",
+    "prerender": "node scripts/contenu.mjs",
+    "render": "npx --yes hyperframes@0.8.103 render",
+    "publish": "npx --yes hyperframes@0.8.103 publish"
+  }
+}
