@@ -206,7 +206,7 @@ for (const [cle, s] of Object.entries(resultat.suivi)) {
     `  ${ok ? "OK " : "KO "} ${dispo.toFixed(2)} s ≥ ${besoin.toFixed(2)} s  [${tailles} px, ${resultat.lignesParCarton[cle]} l.]  « ${texte} »`,
   );
 }
-console.log(`\nTexte posé hors du carré 60–960 × 420–1500 : ${resultat.horsCarre.length} image(s)`);
+console.log(`\nTexte posé hors du carré (x de 60 à 960, y de 420 à 1500) : ${resultat.horsCarre.length} image(s)`);
 resultat.horsCarre.slice(0, 12).forEach((h) => console.log("  ", JSON.stringify(h)));
 if (resultat.horsCarre.length) echecs++;
 console.log(`Cartons sortant du carré pendant un mouvement (whip, entrée) : ${resultat.horsCarreMouvement.length}`);
