@@ -10,6 +10,7 @@ import { Config } from "@remotion/cli/config";
 Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
+Config.setColorSpace("bt709");
 
 // Navigateur local optionnel (Chrome 149 ou plus, requis par le flou HtmlInCanvas)
 if (process.env.REMOTION_CHROME) {
