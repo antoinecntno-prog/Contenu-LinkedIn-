@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="fr" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Instrument Serif";
+        src: url("assets/fonts/InstrumentSerif-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        src: url("assets/fonts/DMSans-latin.woff2") format("woff2");
+        font-weight: 400 700;
+        font-style: normal;
+      }
+      :root {
+        --cream: #f3ecdd;
+        --beige: #cfc2a3;
+        --gold: #e2b04f;
+        --gold-d: #c8902a;
+        --paper: #eee8dc;
+        --ink-p: #27211b;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0c14;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c1b38 0%, #0f2347 38%, #0b1222 72%, #09080b 100%);
+        font-family: "Instrument Serif", serif;
+        color: var(--cream);
+      }
+      .layer,
+      .grp {
+        position: absolute;
+        inset: 0;
+      }
+      .leak {
+        position: absolute;
+        border-radius: 50%;
+      }
+      #vignette {
+        background: radial-gradient(ellipse 75% 60% at 50% 45%, rgba(0, 0, 0, 0) 45%, rgba(3, 4, 10, 0.72) 100%);
+        pointer-events: none;
+      }
+      .dust {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #fff3d6;
+      }
+      #cam {
+        position: absolute;
+        inset: 0;
+        transform-origin: 510px 905px;
+        perspective: 1800px;
+      }
+
+      /* titres : serif étroit, révélés lettre par lettre */
+      .card {
+        position: absolute;
+        left: 60px;
+        width: 900px;
+        text-align: center;
+        font-weight: 400;
+        white-space: nowrap;
+        text-shadow: 0 0 28px rgba(255, 226, 170, 0.2);
+      }
+      .card .line {
+        display: block;
+        letter-spacing: -0.01em;
+      }
+      .w,
+      .ch {
+        display: inline-block;
+      }
+      .ch {
+        opacity: 0;
+      }
+      .w.gd {
+        color: var(--gold);
+        text-shadow: 0 0 26px rgba(230, 176, 80, 0.45);
+      }
+
+      /* papier */
+      .sheet {
+        position: absolute;
+        border-radius: 6px;
+        background: linear-gradient(160deg, #f6f1e8 0%, #ebe4d6 55%, #ddd4c3 100%);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+      }
+      .sheen {
+        position: absolute;
+        top: -20%;
+        left: 0;
+        width: 45%;
+        height: 140%;
+        background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 248, 225, 0.75) 50%, rgba(255, 255, 255, 0) 100%);
+        mix-blend-mode: screen;
+      }
+      .bar {
+        position: absolute;
+        height: 14px;
+        border-radius: 3px;
+        background: #d3c9b6;
+      }
+      .st {
+        position: absolute;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 48px;
+        color: var(--ink-p);
+        white-space: nowrap;
+      }
+      .tag {
+        position: absolute;
+        height: 54px;
+        padding: 0 14px;
+        border-radius: 6px;
+        background: var(--gold);
+        box-shadow: 0 0 24px rgba(226, 176, 79, 0.55);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 40px;
+        line-height: 54px;
+        color: #2a2112;
+        white-space: nowrap;
+      }
+      .hlrow {
+        position: absolute;
+        border-radius: 6px;
+        background: rgba(226, 176, 79, 0.9);
+        box-shadow: 0 0 40px rgba(226, 176, 79, 0.6);
+        transform-origin: 0 50%;
+      }
+      .rl {
+        position: absolute;
+        background: rgba(39, 33, 27, 0.8);
+        transform-origin: 0 50%;
+      }
+
+      /* mètre ruban */
+      #tapeWrap {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        height: 0;
+        filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
+      }
+      #tape {
+        position: absolute;
+        left: 0;
+        top: 0;
+        overflow: visible;
+      }
+      .tnum {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 120px;
+        fill: #3a2508;
+      }
+
+      /* fil d'or et comète */
+      #threads {
+        position: absolute;
+        left: 0;
+        top: 0;
+        overflow: visible;
+        pointer-events: none;
+      }
+
+      /* jauges */
+      .watch {
+        position: absolute;
+        width: 380px;
+        height: 460px;
+        opacity: 0;
+      }
+      .watch .wt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 380px;
+        text-align: center;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 48px;
+        color: var(--cream);
+        white-space: nowrap;
+      }
+      .watch svg {
+        position: absolute;
+        left: 0;
+        top: 70px;
+        overflow: visible;
+      }
+      .bokeh {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div class="leak" id="leakGold" data-layout-ignore></div>
+      <div class="leak" id="leakBlue" data-layout-ignore></div>
+      <div class="layer" id="vignette" data-layout-ignore></div>
+      <div class="layer" id="dustL" data-layout-ignore></div>
+      <div id="cam"></div>
+      <div class="layer" id="bokehL" data-layout-ignore data-layout-allow-occlusion></div>
+    </div>
+
+    <script>
+      (function () {
+        const $ = (id) => document.getElementById(id);
+        const NNBSP = " ";
+        const SVGNS = "http://www.w3.org/2000/svg";
+        let seed = 1001;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+
+        function build() {
+          const tl = gsap.timeline({ paused: true });
+          const K = (el, t, d, from, to, ease) =>
+            tl.fromTo(el, from, Object.assign({}, to, { duration: d, ease: ease || "none", immediateRender: false }), t);
+          const S = (el, t, props) => tl.set(el, props, t);
+          const el = (tag, cls, parent, css) => {
+            const e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (css) e.style.cssText = css;
+            parent.appendChild(e);
+            return e;
+          };
+          const sv = (tag, attrs, parent) => {
+            const e = document.createElementNS(SVGNS, tag);
+            for (const k in attrs) e.setAttribute(k, attrs[k]);
+            parent.appendChild(e);
+            return e;
+          };
+          const pos = (e) => {
+            let x = 0, y = 0;
+            for (let n = e; n && n.id !== "root"; n = n.offsetParent) {
+              x += n.offsetLeft;
+              y += n.offsetTop;
+            }
+            return { x, y, w: e.offsetWidth, h: e.offsetHeight };
+          };
+          const root = $("root"), cam = $("cam");
+
+          /* ---------------- ambiance : lumière, poussière d'or ---------------- */
+          const lg = $("leakGold");
+          lg.style.cssText += "left:-260px;top:1050px;width:1100px;height:1100px;background:radial-gradient(circle, rgba(214,160,70,0.20) 0%, rgba(214,160,70,0) 65%);";
+          const lb = $("leakBlue");
+          lb.style.cssText += "left:280px;top:-300px;width:1200px;height:1200px;background:radial-gradient(circle, rgba(60,110,200,0.22) 0%, rgba(60,110,200,0) 65%);";
+          K(lg, 0, 30, { x: 0, y: 0 }, { x: 260, y: -220 }, "sine.inOut");
+          K(lb, 0, 30, { x: 0, y: 0 }, { x: -200, y: 160 }, "sine.inOut");
+          const dustL = $("dustL");
+          for (let i = 0; i < 70; i++) {
+            const d = el("div", "dust", dustL);
+            const s = 1.5 + rnd() * 3;
+            d.style.cssText += `left:${Math.round(rnd() * 1080)}px;top:${Math.round(rnd() * 1920)}px;width:${s}px;height:${s}px;`;
+            const a = 0.15 + rnd() * 0.45, per = 1.6 + rnd() * 2.4;
+            gsap.set(d, { opacity: a });
+            K(d, 0, 30, { y: 0, x: 0 }, { y: -(80 + rnd() * 200), x: (rnd() - 0.5) * 80 }, "none");
+            tl.fromTo(d, { opacity: a }, { opacity: a * 0.25, duration: per, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor(30 / per) - 1), immediateRender: false }, rnd() * 0.5);
+          }
+
+          /* ---------------- titres ---------------- */
+          // une ligne : "mot mot [mot doré]"
+          function card(parent, lines, o) {
+            const c = el("div", "card", parent);
+            c.setAttribute("data-layout-allow-overlap", "");
+            c.style.top = o.top + "px";
+            c.dataset.text = lines.map((l) => l.replace(/[\[\]]/g, "")).join(" ");
+            lines.forEach((l, i) => {
+              const ln = el("div", "line", c);
+              const size = (o.sizes || [])[i] || o.size;
+              ln.style.fontSize = size + "px";
+              ln.style.lineHeight = Math.round(size * (o.lh || 1.02)) + "px";
+              ln.style.color = (o.colors || [])[i] || "var(--cream)";
+              let gold = false;
+              l.split(/( )/).forEach((tok) => {
+                if (tok === " ") return ln.appendChild(document.createTextNode(" "));
+                if (!tok) return;
+                let t = tok;
+                if (t.startsWith("[")) { gold = true; t = t.slice(1); }
+                const w = el("span", "w" + (gold ? " gd" : ""), ln);
+                if (t.endsWith("]")) { t = t.slice(0, -1); gold = false; }
+                else if (t.includes("]")) { t = t.replace("]", ""); gold = false; }
+                [...t].forEach((ch) => { const e = el("span", "ch", w); e.textContent = ch; e.setAttribute("data-layout-allow-overlap", ""); });
+                w.setAttribute("data-layout-allow-overlap", "");
+              });
+            });
+            return { el: c, chars: [...c.querySelectorAll(".ch")], words: [...c.querySelectorAll(".w")], lines: [...c.querySelectorAll(".line")] };
+          }
+          const REVEAL = 0.2; // étalement des lettres
+          const READ = 0.25; // dernière lettre nette et posée
+          function reveal(c, t, first) {
+            const n = c.chars.length, st = Math.min(0.02, REVEAL / Math.max(1, n - 1));
+            const firstWord = first ? [...c.words[0].querySelectorAll(".ch")] : [];
+            c.chars.forEach((ch, i) => {
+              const s = t + i * st;
+              const soft = firstWord.includes(ch);
+              K(ch, s, 0.5, { y: soft ? 10 : 34 }, { y: 0 }, "power3.out");
+              K(ch, s, 0.25, { opacity: soft ? 0.6 : 0 }, { opacity: 1 }, "power2.out");
+              K(ch, s, 0.3, { filter: soft ? "blur(3px)" : "blur(9px)" }, { filter: "blur(0px)" }, "power2.out");
+              if (soft) gsap.set(ch, { opacity: 0.6, y: 10, filter: "blur(3px)" });
+            });
+            return t + (n - 1) * st + READ;
+          }
+          function hide(c, t) {
+            const n = c.chars.length, st = Math.min(0.012, 0.12 / Math.max(1, n - 1));
+            c.chars.forEach((ch, i) => {
+              const s = t + i * st;
+              K(ch, s, 0.3, { y: 0 }, { y: -26 }, "power2.in");
+              K(ch, s, 0.2, { opacity: 1 }, { opacity: 0 }, "power1.in");
+              K(ch, s, 0.25, { filter: "blur(0px)" }, { filter: "blur(7px)" }, "power2.in");
+            });
+          }
+
+          // Planning : chaque carton reste lisible au moins max(caractères ÷ 15, 1 s).
+          const plan = [];
+          let clock = 0;
+          const need = (txt) => Math.max(txt.length / 15, 1.0);
+          function beat(parent, lines, o, gap) {
+            const c = card(parent, lines, o);
+            const tIn = plan.length ? clock + gap : 0;
+            const readable = reveal(c, tIn, !plan.length);
+            const tOut = Math.ceil((readable + need(c.el.dataset.text) + 0.05) * 30) / 30;
+            plan.push({ c, tIn, readable, tOut });
+            clock = tOut;
+            return plan[plan.length - 1];
+          }
+
+          /* ---------------- scènes ---------------- */
+          const sA = el("div", "grp", cam), sB = el("div", "grp", cam), sC = el("div", "grp", cam), sD = el("div", "grp", cam);
+          const sE = el("div", "grp", cam), sF = el("div", "grp", cam), sG = el("div", "grp", cam);
+          const tapeWrap = el("div", "", cam); tapeWrap.id = "tapeWrap";
+          const thr = sv("svg", { id: "threads", width: 1080, height: 1920 }, cam);
+          const tDefs = sv("defs", {}, thr);
+          const fGlow = sv("filter", { id: "glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, tDefs);
+          sv("feGaussianBlur", { stdDeviation: 7 }, fGlow);
+
+          const C = { cream: "#F3ECDD", beige: "#CFC2A3" };
+          // 1 · accroche
+          const b1 = beat(sA, ["Votre premier", "projet IA", "commence avec", "un stylo"], { size: 150, top: 520, colors: [C.cream, C.cream, C.beige, C.beige] }, 0);
+          hide(b1.c, b1.tOut);
+          const b2 = beat(sA, ["et une feuille."], { size: 130, top: 1290 }, 0.12);
+          hide(b2.c, b2.tOut);
+          // 2 · deux semaines
+          const b3 = beat(sB, ["[Deux semaines.]"], { size: 150, top: 600 }, 0.2);
+          hide(b3.c, b3.tOut);
+          // 3 · première semaine
+          const b4 = beat(sC, ["Première semaine."], { size: 130, top: 236 }, 0.15);
+          hide(b4.c, b4.tOut);
+          const b5 = beat(sC, ["Chacun liste ses", "tâches répétitives."], { size: 110, top: 1270, colors: [C.cream, C.beige] }, 0.1);
+          hide(b5.c, b5.tOut);
+          // 4 · deux questions, dans l'anneau
+          const b6 = beat(sD, ["[Deux]", "questions."], { size: 130, top: 830 }, 0.3);
+          hide(b6.c, b6.tOut);
+          const b7 = beat(sD, ["Combien d’heures", "par semaine" + NNBSP + "?"], { size: 80, top: 880, colors: [C.cream, C.beige] }, 0.1);
+          hide(b7.c, b7.tOut);
+          const b8 = beat(sD, ["Et si l’IA", "se trompe" + NNBSP + "?"], { size: 96, top: 862, colors: [C.cream, C.beige] }, 0.1);
+          hide(b8.c, b8.tOut);
+          // 5 · le choix
+          const b9 = beat(sE, ["Vous tenez votre", "[cas d’usage.]"], { size: 110, top: 1250 }, 0.2);
+          hide(b9.c, b9.tOut);
+          // 6 · deuxième semaine
+          const b10 = beat(sF, ["Deuxième semaine."], { size: 130, top: 236 }, 0.15);
+          hide(b10.c, b10.tOut);
+          const b11 = beat(sF, ["Le terrain", "teste l’outil."], { size: 110, top: 1170, colors: [C.cream, C.beige] }, 0.1);
+          hide(b11.c, b11.tOut);
+          const b12 = beat(sF, ["Le Codir", "[décide.]"], { size: 150, top: 1120 }, 0.1);
+          hide(b12.c, b12.tOut);
+          // 7 · appel
+          const b13 = beat(sG, ["Écrivez [GRILLE]", "en commentaire."], { size: 130, top: 1030, colors: [C.cream, C.beige] }, 0.15);
+          const END = 30;
+          window.__plan = plan.map((p) => ({ t: p.c.el.dataset.text, in: +p.tIn.toFixed(2), r: +p.readable.toFixed(2), out: +p.tOut.toFixed(2) }));
+
+          /* ---------------- fil d'or cousu + comète ---------------- */
+          const comet = sv("g", { opacity: 0 }, thr);
+          sv("circle", { r: 46, fill: "url(#cometG)" }, comet);
+          sv("circle", { r: 7, fill: "#FFF7DE" }, comet);
+          const rg = sv("radialGradient", { id: "cometG" }, tDefs);
+          sv("stop", { offset: "0%", "stop-color": "#FFE7A8", "stop-opacity": 0.9 }, rg);
+          sv("stop", { offset: "100%", "stop-color": "#FFD27A", "stop-opacity": 0 }, rg);
+          let mId = 0;
+          // trace un fil cousu sur le chemin d, révélé de t à t + dur ; la comète suit la pointe
+          function thread(d, t, dur, o) {
+            o = o || {};
+            const g = sv("g", {}, thr);
+            const id = "mk" + mId++;
+            const mask = sv("mask", { id, maskUnits: "userSpaceOnUse", x: -200, y: -200, width: 1480, height: 2320 }, tDefs);
+            const mp = sv("path", { d, fill: "none", stroke: "#fff", "stroke-width": 40, "stroke-linecap": "butt" }, mask);
+            const len = mp.getTotalLength();
+            gsap.set(mp, { strokeDasharray: len + 2, strokeDashoffset: len + 2 });
+            g.setAttribute("mask", `url(#${id})`);
+            sv("path", { d, fill: "none", stroke: "#FFD98A", "stroke-width": 10, opacity: 0.35, filter: "url(#glow)" }, g);
+            sv("path", { d, fill: "none", stroke: "#F6E2A8", "stroke-width": 2, opacity: 0.85 }, g);
+            sv("path", { d, fill: "none", stroke: "#E6BD5C", "stroke-width": 4.5, "stroke-dasharray": "16 11" }, g);
+            K(mp, t, dur, { strokeDashoffset: len + 2 }, { strokeDashoffset: 0 }, o.ease || "power1.inOut");
+            if (o.comet !== false) {
+              const pr = { p: 0 };
+              tl.fromTo(pr, { p: 0 }, {
+                p: 1, duration: dur, ease: o.ease || "power1.inOut", immediateRender: false,
+                onUpdate: () => { const pt = mp.getPointAtLength(pr.p * len); comet.setAttribute("transform", `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`); },
+              }, t);
+              if (o.fadeIn !== false) K(comet, t, 0.12, { opacity: 0 }, { opacity: 1 });
+              if (o.fadeOut !== false) K(comet, t + dur - 0.05, 0.3, { opacity: 1 }, { opacity: 0 });
+            }
+            return g;
+          }
+          // soulignement cousu sous un mot
+          const underline = (w, dy) => {
+            const p = pos(w);
+            const y = p.y + p.h - (dy || 18);
+            return { x0: p.x - 6, x1: p.x + p.w + 6, y };
+          };
+
+          /* ---------------- 1 · accroche ---------------- */
+          const l4 = pos(b1.c.lines[3]);
+          const l4w = b1.c.lines[3].querySelectorAll(".w");
+          const pa = pos(l4w[0]), pb = pos(l4w[1]);
+          const uy = l4.y + l4.h - 14;
+          const lead = `M -80 ${uy + 260} C 160 ${uy + 300}, ${pa.x - 220} ${uy + 40}, ${pa.x - 8} ${uy}`;
+          const und = `M ${pa.x - 8} ${uy} C ${pa.x + 120} ${uy + 6}, ${pb.x + pb.w - 120} ${uy - 6}, ${pb.x + pb.w + 10} ${uy + 2}`;
+          const gLead = thread(lead, 0, 0.55, { ease: "power2.out", fadeOut: false });
+          const gUnd = thread(und, 0.55, 0.55, { ease: "power1.out", fadeIn: false });
+          K(gLead, 0.9, 0.5, { opacity: 1 }, { opacity: 0 });
+          K(gUnd, b1.tOut, 0.25, { opacity: 1 }, { opacity: 0 });
+
+          // feuille de papier qui monte en 3D
+          const paperA = el("div", "sheet", sA, "left:230px;top:330px;width:560px;height:740px;");
+          [[70, 100, 330], [70, 170, 420], [70, 240, 380], [70, 330, 420], [70, 400, 300], [70, 470, 400], [70, 560, 360], [70, 630, 260]].forEach(([x, y, w]) =>
+            el("div", "bar", paperA, `left:${x}px;top:${y}px;width:${w}px;`)
+          );
+          const shA = el("div", "sheen", paperA);
+          gsap.set(paperA, { transformPerspective: 1600, y: 1300, rotationX: 40, rotation: 6, opacity: 0 });
+          const tA = b2.tIn - 0.15;
+          K(paperA, tA, 0.85, { y: 1300, rotationX: 40, rotation: 6 }, { y: 0, rotationX: 0, rotation: -3 }, "power3.out");
+          K(paperA, tA, 0.2, { opacity: 0 }, { opacity: 1 });
+          K(shA, tA + 0.5, 0.8, { xPercent: -120 }, { xPercent: 260 }, "power2.inOut");
+          // traversée : la caméra entre dans la feuille
+          const tAB = b2.tOut;
+          K(paperA, tAB, 0.45, { scale: 1, rotation: -3 }, { scale: 3.2, rotation: 0 }, "power3.in");
+          K(paperA, tAB + 0.12, 0.2, { opacity: 1 }, { opacity: 0 });
+
+          /* ---------------- mètre ruban (recalculé à chaque image) ---------------- */
+          const TP = { L: 2600, W: 200, s0: 170, ds: 175, days: 14 };
+          const tape = sv("svg", { id: "tape", width: 1, height: 1 }, tapeWrap);
+          const tg = sv("g", {}, tape);
+          const pBandD = sv("path", { fill: "none", stroke: "#8E5E17", "stroke-width": TP.W, "stroke-linejoin": "round" }, tg);
+          const pBand = sv("path", { fill: "none", stroke: "#CF9634", "stroke-width": TP.W - 12 }, tg);
+          const pHi = sv("path", { fill: "none", stroke: "#F0C468", "stroke-width": TP.W * 0.42, opacity: 0.35 }, tg);
+          const pEdgeA = sv("path", { fill: "none", stroke: "#F7E4AE", "stroke-width": 3.5, "stroke-dasharray": "14 10", opacity: 0.75 }, tg);
+          const pEdgeB = sv("path", { fill: "none", stroke: "#F7E4AE", "stroke-width": 3.5, "stroke-dasharray": "14 10", opacity: 0.75 }, tg);
+          const pTicks = sv("path", { fill: "none", stroke: "#3A2508", "stroke-width": 4 }, tg);
+          const nums = [];
+          for (let i = 1; i <= TP.days; i++) {
+            const t = sv("text", { class: "tnum", "text-anchor": "middle", "dominant-baseline": "central" }, tg);
+            t.textContent = String(i);
+            nums.push(t);
+          }
+          const marker = sv("g", {}, tg);
+          sv("line", { x1: 0, y1: -TP.W / 2 - 62, x2: 0, y2: TP.W / 2 + 20, stroke: "#FFF3D0", "stroke-width": 5 }, marker);
+          sv("circle", { cx: 0, cy: -TP.W / 2 - 70, r: 26, fill: "url(#cometG)" }, marker);
+          sv("circle", { cx: 0, cy: -TP.W / 2 - 70, r: 9, fill: "#FFF7DE" }, marker);
+          const TS = { k: 0, rot: 0, m: 1, mo: 1 };
+          function geo(s, c) {
+            const th = c * (s - TP.L / 2);
+            if (Math.abs(c) < 1e-7) return { x: s - TP.L / 2, y: 0, th: 0 };
+            return { x: Math.sin(th) / c, y: (1 - Math.cos(th)) / c, th };
+          }
+          function renderTape() {
+            const c = (TS.k * 2 * Math.PI) / TP.L;
+            const ctr = [], ea = [], eb = [];
+            let ticks = "";
+            for (let s = 0; s <= TP.L; s += 20) {
+              const g = geo(s, c), nx = Math.sin(g.th), ny = -Math.cos(g.th);
+              ctr.push(`${g.x.toFixed(1)} ${g.y.toFixed(1)}`);
+              const o = TP.W / 2 - 16;
+              ea.push(`${(g.x + nx * o).toFixed(1)} ${(g.y + ny * o).toFixed(1)}`);
+              eb.push(`${(g.x - nx * o).toFixed(1)} ${(g.y - ny * o).toFixed(1)}`);
+            }
+            for (let s = TP.s0 - TP.ds; s <= TP.L - 40; s += TP.ds / 5) {
+              if (s < 30) continue;
+              const g = geo(s, c), nx = Math.sin(g.th), ny = -Math.cos(g.th);
+              const major = Math.abs(((s - TP.s0) / TP.ds) - Math.round((s - TP.s0) / TP.ds)) < 0.01;
+              const a = TP.W / 2 - 8, b = a - (major ? 46 : 22);
+              ticks += `M${(g.x + nx * a).toFixed(1)} ${(g.y + ny * a).toFixed(1)}L${(g.x + nx * b).toFixed(1)} ${(g.y + ny * b).toFixed(1)}`;
+            }
+            const d = "M" + ctr.join("L");
+            pBandD.setAttribute("d", d);
+            pBand.setAttribute("d", d);
+            pHi.setAttribute("d", d);
+            pEdgeA.setAttribute("d", "M" + ea.join("L"));
+            pEdgeB.setAttribute("d", "M" + eb.join("L"));
+            pTicks.setAttribute("d", ticks);
+            nums.forEach((t, i) => {
+              const s = TP.s0 + i * TP.ds;
+              const g = geo(s, c), nx = Math.sin(g.th), ny = -Math.cos(g.th);
+              const x = g.x - nx * 18, y = g.y - ny * 18;
+              t.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${((g.th * 180) / Math.PI).toFixed(2)})`);
+            });
+            const ms = TP.s0 + (TS.m - 1) * TP.ds, mg = geo(ms, c);
+            marker.setAttribute("transform", `translate(${mg.x.toFixed(1)} ${mg.y.toFixed(1)}) rotate(${((mg.th * 180) / Math.PI).toFixed(2)})`);
+            marker.setAttribute("opacity", TS.mo.toFixed(3));
+            const R = c > 1e-7 ? 1 / c : 0;
+            tg.setAttribute("transform", c > 1e-7 ? `rotate(${TS.rot.toFixed(2)} 0 ${R.toFixed(1)})` : "");
+          }
+          renderTape();
+          const tapeTo = (t, d, to, ease) => {
+            const from = Object.assign({}, TS0);
+            const next = Object.assign({}, from, to);
+            tl.fromTo(TS, from, Object.assign({}, next, { duration: d, ease: ease || "power2.inOut", immediateRender: false, onUpdate: renderTape }), t);
+            Object.assign(TS0, next);
+          };
+          const TS0 = { k: 0, rot: 0, m: 1, mo: 0 };
+          Object.assign(TS, TS0);
+          renderTape();
+          // position et échelle du ruban à l'écran (milieu du ruban)
+          const W0 = { x: -1400, y: 1050, scale: 0.34 };
+          gsap.set(tapeWrap, W0);
+          let wcur = Object.assign({}, W0);
+          const wrapTo = (t, d, to, ease) => {
+            const next = Object.assign({}, wcur, to);
+            K(tapeWrap, t, d, Object.assign({}, wcur), next, ease || "power3.inOut");
+            wcur = next;
+          };
+
+          /* ---------------- 2 · deux semaines ---------------- */
+          const tB = b3.tIn;
+          wrapTo(tB - 0.2, 0.9, { x: 510 }, "power3.out");
+          tapeTo(tB + 0.3, 0.01, { mo: 1, m: 1 }, "none");
+          tapeTo(tB + 0.35, 0.95, { m: 14 }, "power2.inOut");
+
+          /* ---------------- 3 · première semaine : la liste ---------------- */
+          const tC = b4.tIn;
+          // le ruban devient l'en-tête ; le repère avance du jour 1 au jour 7
+          wrapTo(tC - 0.15, 0.6, { x: 705, y: 470, scale: 0.5 }, "power3.inOut");
+          tapeTo(tC - 0.15, 0.4, { m: 1 }, "power2.inOut");
+          tapeTo(tC + 0.5, b5.tOut - tC - 0.6, { m: 7 }, "power1.inOut");
+          // trois feuilles en éventail
+          const fan = [
+            { l: 110, t: 660, w: 520, h: 380, r: -8 },
+            { l: 390, t: 640, w: 520, h: 380, r: 7 },
+          ].map((f) => {
+            const p = el("div", "sheet", sC, `left:${f.l}px;top:${f.t}px;width:${f.w}px;height:${f.h}px;`);
+            [[40, 60, 300], [40, 120, 380], [40, 180, 260], [40, 240, 340], [40, 300, 220]].forEach(([x, y, w]) => el("div", "bar", p, `left:${x}px;top:${y}px;width:${w}px;`));
+            gsap.set(p, { transformPerspective: 1600, rotation: f.r, opacity: 0 });
+            return p;
+          });
+          const front = el("div", "sheet", sC, "left:150px;top:620px;width:720px;height:520px;");
+          const fA = el("div", "st", front, "left:44px;top:62px;"); fA.textContent = "Comptes rendus de réunion";
+          const fB = el("div", "st", front, "left:44px;top:162px;"); fB.textContent = "Relances de devis";
+          const tagA = el("div", "tag", front, "left:578px;top:58px;"); tagA.textContent = "… h";
+          const tagB = el("div", "tag", front, "left:578px;top:158px;"); tagB.textContent = "… h";
+          const hl = el("div", "hlrow", front, "left:24px;top:46px;width:672px;height:82px;");
+          front.insertBefore(hl, fA);
+          gsap.set(hl, { scaleX: 0 });
+          const fRule = [130, 230].map((y) => { const r = el("div", "rl", front, `left:44px;top:${y}px;width:632px;height:2px;`); gsap.set(r, { scaleX: 0 }); return r; });
+          const fBars = [[44, 286, 380], [44, 356, 300], [44, 426, 340]].map(([x, y, w]) => el("div", "bar", front, `left:${x}px;top:${y}px;width:${w}px;`));
+          const shF = el("div", "sheen", front);
+          gsap.set(front, { transformPerspective: 1600, opacity: 0 });
+          gsap.set([fA, fB], { clipPath: "inset(-20% 100% -20% 0%)" });
+          gsap.set([tagA, tagB], { opacity: 0 });
+          const tF = tC + 0.25;
+          fan.forEach((p, i) => {
+            K(p, tF + i * 0.08, 0.8, { y: 1100, rotationX: 35 }, { y: 0, rotationX: 0 }, "power3.out");
+            K(p, tF + i * 0.08, 0.2, { opacity: 0 }, { opacity: 1 });
+          });
+          K(front, tF + 0.18, 0.85, { y: 1100, rotationX: 35, rotation: 4 }, { y: 0, rotationX: 0, rotation: -1.5 }, "power3.out");
+          K(front, tF + 0.18, 0.2, { opacity: 0 }, { opacity: 1 });
+          K(shF, tF + 0.9, 0.9, { xPercent: -120 }, { xPercent: 260 }, "power2.inOut");
+          fRule.forEach((r, i) => K(r, tF + 0.9 + i * 0.1, 0.4, { scaleX: 0 }, { scaleX: 1 }, "power3.out"));
+          const tW = b5.tIn;
+          K(fA, tW + 0.1, 0.5, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)" }, "power1.inOut");
+          K(fB, tW + 0.55, 0.4, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)" }, "power1.inOut");
+          [tagA, tagB].forEach((tg2, i) => {
+            K(tg2, tW + 1.0 + i * 0.18, 0.45, { scale: 1.6, opacity: 0 }, { scale: 1, opacity: 1 }, "expo.out");
+          });
+          // les feuilles tombent hors du cadre
+          const tCD = b5.tOut;
+          [...fan, front].forEach((p, i) => {
+            K(p, tCD + i * 0.04, 0.5, { y: 0, rotationX: 0 }, { y: 1300, rotationX: -30 }, "power3.in");
+          });
+
+          /* ---------------- 4 · l'anneau des deux questions ---------------- */
+          const tD = b6.tIn;
+          const kRing = 0.96, Rr = TP.L / (2 * Math.PI * kRing), sR = 0.8;
+          const ringC = { x: 510, y: 960 };
+          tapeTo(tCD, 0.3, { mo: 0 }, "power1.out");
+          wrapTo(tCD + 0.05, 0.45, { x: 510, y: ringC.y - Rr * sR, scale: sR }, "power3.inOut");
+          tapeTo(tCD + 0.35, 0.85, { k: kRing }, "power2.inOut");
+          tapeTo(tCD + 1.2, b8.tOut - tCD - 1.1, { rot: 24 }, "sine.inOut");
+          // traversée de l'anneau vers la feuille
+          const tDE = b8.tOut;
+          const zs = 3.6;
+          wrapTo(tDE, 0.4, { scale: zs, y: ringC.y - Rr * zs }, "power3.in");
+          K(tapeWrap, tDE + 0.15, 0.25, { opacity: 1 }, { opacity: 0 });
+
+          /* ---------------- 5 · la bonne ligne se surligne ---------------- */
+          const tE = b9.tIn;
+          S(front, tE - 0.4, { y: 1300, rotationX: -30, opacity: 1 });
+          gsap.set(front, { transformOrigin: "50% 50%" });
+          K(front, tE - 0.02, 0.7, { y: 1300, rotationX: -30, rotation: -1.5, scale: 1 }, { y: -40, rotationX: 0, rotation: 0, scale: 1.08 }, "power3.out");
+          [...fan].forEach((p) => S(p, tE - 0.4, { opacity: 0 }));
+          K(hl, tE + 0.5, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power3.inOut");
+          S(fA, tE + 0.5, { color: "#2A2112" });
+          [fB, tagB, ...fBars, fRule[1]].forEach((n) => K(n, tE + 0.85, 0.4, { opacity: 1 }, { opacity: 0.25 }));
+          K(shF, tE + 0.6, 0.9, { xPercent: -120 }, { xPercent: 260 }, "power2.inOut");
+          const tEF = b9.tOut;
+          K(front, tEF, 0.45, { y: -40, scale: 1.08 }, { y: 1300, scale: 1 }, "power3.in");
+
+          /* ---------------- 6 · deuxième semaine ---------------- */
+          const tFb = b10.tIn;
+          // le ruban redevient droit hors champ et revient pour les jours 8 à 14
+          tapeTo(tEF - 0.5, 0.01, { k: 0, rot: 0, m: 8, mo: 1 }, "none");
+          wrapTo(tEF - 0.5, 0.01, { x: 1700, y: 470, scale: 0.5 }, "none");
+          S(tapeWrap, tEF - 0.42, { opacity: 1 });
+          wrapTo(tFb - 0.1, 0.8, { x: 92.5 }, "power3.out");
+          tapeTo(tFb + 0.6, b11.tOut - tFb - 0.6, { m: 14 }, "power1.inOut");
+          // deux jauges dorées, aiguilles au même rythme
+          const makeGauge = (cx, label) => {
+            const w = el("div", "watch", sF, `left:${cx - 190}px;top:560px;`);
+            let ticks = "";
+            for (let i = 0; i < 60; i++) {
+              const a = (i * 6 * Math.PI) / 180, big = i % 5 === 0, r0 = big ? 128 : 140, r1 = 150;
+              ticks += `M${(Math.sin(a) * r0).toFixed(1)} ${(-Math.cos(a) * r0).toFixed(1)}L${(Math.sin(a) * r1).toFixed(1)} ${(-Math.cos(a) * r1).toFixed(1)}`;
+            }
+            const hand = (op, cls) => `<g class="${cls}" opacity="${op}"><circle r="130" fill="none" stroke="none"/><line x1="0" y1="24" x2="0" y2="-124" stroke="#FFF1CF" stroke-width="6"/></g>`;
+            w.innerHTML =
+              `<div class="wt">${label}</div>` +
+              `<svg class="dial" width="380" height="380" viewBox="-190 -190 380 380" style="filter: drop-shadow(0 0 14px rgba(226,176,79,0.45))">` +
+              `<circle r="170" fill="rgba(15,35,71,0.6)" stroke="#E2B04F" stroke-width="8"/>` +
+              `<circle r="156" fill="none" stroke="#E2B04F" stroke-width="1.5" opacity="0.5"/>` +
+              `<path d="${ticks}" stroke="#E2B04F" stroke-width="3"/>` +
+              hand(0.12, "g3") + hand(0.22, "g2") + hand(0.4, "g1") + hand(1, "hand") +
+              `<circle r="12" fill="#E2B04F"/></svg>`;
+            return w;
+          };
+          const gL = makeGauge(300, "À la main"), gR = makeGauge(720, "Avec l’outil");
+          [gL, gR].forEach((w, i) => {
+            const t0 = tFb + 0.35 + i * 0.1;
+            gsap.set(w, { transformPerspective: 1400, transformOrigin: "50% 60%" });
+            K(w, t0, 0.8, { scale: 0.6, rotationY: i ? 40 : -40, y: 80 }, { scale: 1, rotationY: 0, y: 0 }, "power3.out");
+            K(w, t0, 0.25, { opacity: 0 }, { opacity: 1 });
+            const spinEnd = b12.readable;
+            [["hand", 0], ["g1", 9], ["g2", 18], ["g3", 27]].forEach(([cls, lag]) => {
+              const h = w.querySelector("." + cls);
+              gsap.set(h, { svgOrigin: "0 0", rotation: -lag });
+              K(h, tFb + 0.9, spinEnd - tFb - 0.9, { rotation: -lag }, { rotation: 1080 - lag * 0.2 }, "power2.inOut");
+            });
+            K(w, b12.tOut, 0.35, { opacity: 1, y: 0 }, { opacity: 0, y: -60 }, "power2.in");
+          });
+          K(tapeWrap, b12.tOut, 0.3, { opacity: 1 }, { opacity: 0 });
+          // « décide. » : soulignement cousu et halo
+          const wDec = b12.c.lines[1].querySelector(".w");
+          const pd = pos(wDec), dy = pd.y + pd.h - 16;
+          const dPath = `M ${pd.x - 140} ${dy + 70} C ${pd.x - 40} ${dy + 40}, ${pd.x - 20} ${dy}, ${pd.x} ${dy} C ${pd.x + pd.w * 0.4} ${dy + 6}, ${pd.x + pd.w * 0.7} ${dy - 5}, ${pd.x + pd.w + 8} ${dy + 1}`;
+          const gDec = thread(dPath, b12.tIn + 0.15, 0.6, { ease: "power2.inOut" });
+          K(gDec, b12.tOut, 0.25, { opacity: 1 }, { opacity: 0 });
+          const halo = el("div", "leak", sF, `left:${pd.x + pd.w / 2 - 400}px;top:${pd.y + pd.h / 2 - 400}px;width:800px;height:800px;background:radial-gradient(circle, rgba(226,176,79,0.32) 0%, rgba(226,176,79,0) 60%);`);
+          gsap.set(halo, { opacity: 0, scale: 0.4 });
+          K(halo, b12.tIn + 0.3, 0.9, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1 }, "power2.out");
+          K(halo, b12.tOut, 0.3, { opacity: 1 }, { opacity: 0 });
+
+          /* ---------------- 7 · la grille, l'appel ---------------- */
+          const tG = b13.tIn;
+          const grid = el("div", "sheet", sG, "left:110px;top:330px;width:820px;height:560px;");
+          const gh1 = el("div", "st", grid, "left:30px;top:40px;font-weight:600;"); gh1.textContent = "Heures par semaine";
+          const gh2 = el("div", "st", grid, "left:446px;top:40px;font-weight:600;"); gh2.textContent = "Si l’IA se trompe";
+          const gV = el("div", "rl", grid, "left:420px;top:28px;width:3px;height:500px;");
+          const gRows = [120, 220, 320, 420].map((y, i) => el("div", "rl", grid, `left:30px;top:${y}px;width:760px;height:${i ? 2 : 4}px;opacity:${i ? 0.35 : 0.85};`));
+          const shG = el("div", "sheen", grid);
+          gsap.set(grid, { transformPerspective: 1600, opacity: 0 });
+          gsap.set([gh1, gh2], { clipPath: "inset(-20% 100% -20% 0%)" });
+          gsap.set(gRows, { scaleX: 0 });
+          gsap.set(gV, { scaleY: 0, transformOrigin: "50% 0%" });
+          // la grille descend du haut : elle ne croise pas « Le Codir décide. » qui s'efface en bas
+          K(grid, tG - 0.15, 0.9, { y: -1100, rotationX: -40, rotation: -6 }, { y: 0, rotationX: 0, rotation: -2 }, "power3.out");
+          K(grid, tG - 0.15, 0.2, { opacity: 0 }, { opacity: 1 });
+          K(gV, tG + 0.3, 0.5, { scaleY: 0 }, { scaleY: 1 }, "power3.out");
+          gRows.forEach((r, i) => K(r, tG + 0.35 + i * 0.06, 0.45, { scaleX: 0 }, { scaleX: 1 }, "power3.out"));
+          K(gh1, tG + 0.4, 0.45, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)" }, "power1.inOut");
+          K(gh2, tG + 0.6, 0.4, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)" }, "power1.inOut");
+          K(shG, tG + 0.7, 1.0, { xPercent: -120 }, { xPercent: 260 }, "power2.inOut");
+          const wG = b13.c.lines[0].querySelectorAll(".w")[1];
+          const pg = pos(wG), gy = pg.y + pg.h - 14;
+          const gPath = `M ${pg.x - 6} ${gy} C ${pg.x + pg.w * 0.35} ${gy + 7}, ${pg.x + pg.w * 0.7} ${gy - 6}, ${pg.x + pg.w + 10} ${gy + 2}`;
+          thread(gPath, b13.readable - 0.05, 0.7, { ease: "power2.inOut" });
+          const halo2 = el("div", "leak", sG, `left:${pg.x + pg.w / 2 - 420}px;top:${pg.y + pg.h / 2 - 420}px;width:840px;height:840px;background:radial-gradient(circle, rgba(226,176,79,0.26) 0%, rgba(226,176,79,0) 60%);`);
+          gsap.set(halo2, { opacity: 0 });
+          K(halo2, b13.readable, 1.2, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1 }, "power2.out");
+
+          /* ---------------- passages de bokeh entre les scènes ---------------- */
+          const bokehL = $("bokehL");
+          const bokehPass = (t, dir) => {
+            for (let i = 0; i < 4; i++) {
+              const sz = 260 + rnd() * 420;
+              const b = el("div", "bokeh", bokehL, `width:${sz}px;height:${sz}px;top:${Math.round(200 + rnd() * 1400)}px;left:0;background:radial-gradient(circle, rgba(255,226,160,${(0.16 + rnd() * 0.18).toFixed(2)}) 0%, rgba(255,210,120,0) 68%);`);
+              const x0 = dir > 0 ? -sz : 1080, x1 = dir > 0 ? 1080 : -sz;
+              K(b, t + i * 0.04, 0.6, { x: x0, opacity: 1, scale: 0.7 }, { x: x1, opacity: 1, scale: 1.3 }, "power2.inOut");
+              S(b, t + i * 0.04 + 0.6, { opacity: 0 });
+            }
+          };
+          bokehPass(b2.tOut - 0.05, 1);
+          bokehPass(b5.tOut, -1);
+          bokehPass(b8.tOut + 0.05, 1);
+          bokehPass(b12.tOut, -1);
+
+          /* ---------------- caméra : poussée lente dans chaque scène ---------------- */
+          [[0, b2.tOut], [b3.tIn, b3.tOut], [b4.tIn, b5.tOut], [b6.tIn, b8.tOut], [b9.tIn, b9.tOut], [b10.tIn, b12.tOut], [b13.tIn - 0.3, END]].forEach(([a, b]) =>
+            K(cam, a, b - a, { scale: 1 }, { scale: 1.03 }, "none")
+          );
+
+          thr.appendChild(comet);
+          tl.seek(0);
+          window.__timelines = window.__timelines || {};
+          window.__timelines["main"] = tl;
+        }
+
+        Promise.all([document.fonts.load('400 100px "Instrument Serif"'), document.fonts.load('500 40px "DM Sans"'), document.fonts.load('600 40px "DM Sans"')])
+          .then(() => document.fonts.ready)
+          .then(build);
+      })();
+    </script>
+  </body>
+</html>
