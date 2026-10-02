@@ -11,11 +11,22 @@ import { S6Reponses } from "./scenes/S6Reponses";
 import { S7Joie } from "./scenes/S7Joie";
 import { S8DixHeures } from "./scenes/S8DixHeures";
 import { S9Signature } from "./scenes/S9Signature";
+import * as CO from "./coulisses/constants";
+import { Accroche, OProbe } from "./coulisses/scenes/Accroche";
+import { Coulisses, CoulissesFilm } from "./coulisses/Coulisses";
+import { FinProbe } from "./coulisses/scenes/Fin";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition id="Coulisses" component={Coulisses} durationInFrames={CO.TOTAL} fps={CO.FPS} width={CO.W} height={CO.H} />
       <Composition id="JourneeFormation" component={JourneeFormation} durationInFrames={TOTAL} fps={FPS} width={W} height={H} />
+      <Folder name="Coulisses-outils">
+        <Composition id="CO-Accroche" component={Accroche} durationInFrames={160} fps={CO.FPS} width={CO.W} height={CO.H} />
+        <Composition id="CO-SansFlou" component={CoulissesFilm} durationInFrames={CO.TOTAL} fps={CO.FPS} width={CO.W} height={CO.H} />
+        <Composition id="CO-FinProbe" component={FinProbe} durationInFrames={1} fps={CO.FPS} width={CO.W} height={CO.H} />
+        <Composition id="CO-OProbe" component={OProbe} durationInFrames={1} fps={CO.FPS} width={CO.W} height={CO.H} />
+      </Folder>
       <Folder name="Apercus">
         <Composition id="FilmSansFlou" component={Film} durationInFrames={TOTAL} fps={FPS} width={W} height={H} />
       </Folder>

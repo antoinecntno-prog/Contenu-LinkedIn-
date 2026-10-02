@@ -1,5 +1,28 @@
 # Contenu-LinkedIn-
 
+## Motion design : les coulisses de la vidéo de formation
+
+Film sonorisé de 20 s en 1080×1350 (4:5), 60 i/s, pour le post qui raconte comment la vidéo de formation a été programmée. Le film précédent y est incrusté directement depuis ses composants.
+
+- Composition : `Coulisses` (avec flou de mouvement). `CO-SansFlou` sert aux aperçus rapides.
+- Code dans `src/coulisses/`, calage et couleurs dans `src/coulisses/constants.ts`.
+- Storyboard : `storyboard-coulisses.md`.
+- Film livré : `out/2026-10-02_coulisses-video-formation-ia.mp4`.
+
+```bash
+npx remotion render Coulisses muet.mp4 --codec=h264 --crf=16
+python3 scripts/audio/son_coulisses.py son.wav
+ffmpeg -i muet.mp4 -i son.wav -map 0:v -map 1:a -c:v copy -af "loudnorm=I=-14:TP=-1.5" -c:a aac -b:a 192k -shortest out/2026-10-02_coulisses-video-formation-ia.mp4
+```
+
+Le flou de mouvement (`HtmlInCanvasMotionBlur`) perd parfois une image au hasard. Après chaque rendu, `scripts/controle_flou.py` compare chaque image floue à sa version nette, re-rend seules les images cassées et les recolle à leur place :
+
+```bash
+python3 scripts/controle_flou.py out/2026-10-02_coulisses-video-formation-ia.mp4 /tmp/controle --reparer
+```
+
+Les deux films utilisent les polices de `public/fonts` : le rendu ne dépend plus de Google Fonts.
+
 ## Motion design : une journée de formation IA
 
 Projet Remotion (TypeScript) qui fabrique un film muet de 32 s en 1920×1080, 60 i/s.
