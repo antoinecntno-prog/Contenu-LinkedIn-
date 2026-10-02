@@ -7,3 +7,5 @@ dist
 out/*
 !out/2026-10-01_motion-journee-formation-ia.mp4
 !out/2026-10-02_motion-journee-formation-ia-son.mp4
+!out/2026-10-02_coulisses-video-formation-ia.mp4
+__pycache__
