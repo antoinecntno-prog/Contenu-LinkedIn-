@@ -298,10 +298,11 @@ export const HandFG: React.FC<{ x: number; y: number; rot: number; shape: "open"
       </g>
     ) : (
       <g fill={C.skinMoi}>
-        <rect x={-30} y={-262} width={32} height={150} rx={16} />
-        <rect x={4} y={-150} width={30} height={50} rx={15} fill={C.skinMoiShade} />
-        <rect x={34} y={-140} width={28} height={44} rx={14} fill={C.skinMoiShade} />
-        <rect x={-62} y={-146} width={30} height={50} rx={15} fill={C.skinMoiShade} />
+        {/* index tendu, côté pouce ; les trois autres doigts repliés */}
+        <rect x={-62} y={-264} width={32} height={152} rx={16} />
+        <rect x={-28} y={-152} width={30} height={50} rx={15} fill={C.skinMoiShade} />
+        <rect x={4} y={-148} width={30} height={48} rx={15} fill={C.skinMoiShade} />
+        <rect x={36} y={-138} width={26} height={42} rx={13} fill={C.skinMoiShade} />
         <rect x={-112} y={-86} width={30} height={86} rx={15} transform="rotate(-50, -97, -43)" />
       </g>
     )}
