@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Rendus ignorés, sauf le film livré
+out/*
+!out/2026-10-01_motion-journee-formation-ia.mp4
+!out/2026-10-02_motion-journee-formation-ia-son.mp4
