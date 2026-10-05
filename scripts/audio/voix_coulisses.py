@@ -1,8 +1,8 @@
 """Voix off du film « Coulisses » : découpe la prise ElevenLabs (voix Paul K) et cale chaque phrase sur l'image.
 
 Usage : python3 scripts/audio/voix_coulisses.py <sortie.wav>
-Source : public/voix/paulk-prise1.mp3, lue d'une traite. Les bornes de chaque phrase viennent de la
-transcription mot à mot (ElevenLabs Scribe) de cette prise. Chaque phrase est accélérée sans changer la
+Source : public/voix/paulk-v3-prise2.mp3 (modèle eleven_v3, avec indications d'émotion), lue d'une traite. Les bornes de chaque phrase viennent des
+silences de la prise, recoupés avec sa transcription mot à mot (ElevenLabs Scribe). Chaque phrase est accélérée sans changer la
 hauteur (filtre atempo de ffmpeg), puis posée à l'instant où son texte apparaît à l'écran.
 """
 import subprocess
@@ -12,20 +12,20 @@ import numpy as np
 from scipy.io import wavfile
 
 SR = 48000
-DUR = 21.5
-SOURCE = "public/voix/paulk-prise1.mp3"
+DUR = 22.0
+SOURCE = "public/voix/paulk-v3-prise2.mp3"
 
-# (début, fin) dans la prise, en secondes ; image d'arrivée dans le film (60 i/s) ; accélération
+# (début, fin) dans la prise, en secondes ; image d'arrivée dans le film (60 i/s) ; accélération.
+# Bornes prises dans les silences de la prise (détection ffmpeg), recoupées avec la transcription.
 PHRASES = [
-    ("Ma dernière vidéo de formation IA est écrite en code.", 0.00, 3.60, 3, 1.15),
-    ("Claude Code l'a programmée.", 3.70, 5.25, 192, 1.10),
-    ("Au départ, je lui ai donné", 5.35, 6.955, 277, 1.10),
-    ("Remotion transforme le code en vidéo, son compris.", 10.62, 13.70, 366, 1.10),
-    ("Ma part : relire et corriger.", 13.78, 16.14, 606, 1.10),
-    ("La même méthode, aux couleurs de la maison.", 16.22, 18.56, 737, 1.10),
-    ("Quelle vidéo repoussez-vous faute de temps ?", 23.38, 25.60, 944, 1.10),
-    ("Antoine Contino.", 25.60, 26.76, 1080, 1.15),
-    ("L'IA simplifiée et taillée sur mesure.", 27.00, 29.68, 1140, 1.15),
+    ("Ma dernière vidéo de formation IA est écrite en code !", 0.00, 3.40, 3, 1.05),
+    ("Claude Code l'a programmée.", 3.55, 5.35, 200, 1.0),
+    ("Rémotion transforme le code en vidéo... son compris !", 5.70, 8.86, 336, 1.0),
+    ("Ma part : relire, et corriger.", 9.28, 11.62, 606, 1.0),
+    ("La même méthode, aux couleurs de la maison.", 12.00, 14.45, 750, 1.0),
+    ("Quelle vidéo repoussez-vous, faute de temps ?", 15.27, 17.45, 944, 1.0),
+    ("Antoine Contino.", 18.20, 19.43, 1080, 1.05),
+    ("L'IA simplifiée, et taillée sur mesure.", 20.00, 22.70, 1152, 1.05),
 ]
 
 

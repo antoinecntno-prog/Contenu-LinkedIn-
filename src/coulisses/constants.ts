@@ -1,9 +1,9 @@
-// Film « Coulisses » : 21,5 s en 1080 × 1350 (4:5), 60 i/s, 120 BPM (un temps = 30 images).
+// Film « Coulisses » : 22 s en 1080 × 1350 (4:5), 60 i/s, 120 BPM (un temps = 30 images).
 
 export const W = 1080;
 export const H = 1350;
 export const FPS = 60;
-export const TOTAL = 1290; // 20 s de film, puis 1,5 s de signature tenue pour la fin de la voix off
+export const TOTAL = 1320; // 20 s de film, puis 2 s de signature tenue pour la fin de la voix off
 export const BEAT = 30;
 export const M = 80; // marge latérale
 
@@ -33,7 +33,7 @@ export const SEQ = {
   accroche: { from: 0, to: 160 },
   entrees: { from: 104, to: 340 },
   studio: { from: 262, to: 952 },
-  fin: { from: 926, to: 1290 },
+  fin: { from: 926, to: 1320 },
 };
 
 // Temps forts partagés entre scènes et bande son

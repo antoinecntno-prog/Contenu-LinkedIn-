@@ -36,7 +36,7 @@ from generer_son import (  # noqa: E402
     zap,
 )
 
-DUR = 21.5
+DUR = 22.0
 N = int(SR * DUR)
 FPS = 60
 rng = np.random.default_rng(11)

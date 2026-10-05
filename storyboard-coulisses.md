@@ -1,6 +1,6 @@
 # Storyboard : les coulisses de la vidéo de formation
 
-Film de 21,5 s, 1080×1350 (4:5, fil LinkedIn sur mobile), 60 i/s, 1290 images. Les 1,5 s finales tiennent la signature le temps que la voix off la dise. Composition Remotion `Coulisses`, code dans `src/coulisses/`. Il accompagne le post qui raconte comment le film `JourneeFormation` a été programmé par Claude Code.
+Film de 22 s, 1080×1350 (4:5, fil LinkedIn sur mobile), 60 i/s, 1320 images. Les 2 s finales tiennent la signature le temps que la voix off la dise. Composition Remotion `Coulisses`, code dans `src/coulisses/`. Il accompagne le post qui raconte comment le film `JourneeFormation` a été programmé par Claude Code.
 
 ## Règles communes
 
@@ -50,5 +50,4 @@ Le panneau bordeaux tombe, le « ? » reste et se déroule en trait ocre. Sur l'
 
 ## Voix off
 
-Voix ElevenLabs « Paul K », une seule prise découpée en phrases et accélérée de 10 à 15 % sans changer la hauteur. Chaque phrase part sur l'image où son texte apparaît : l'accroche dès 0,05 s, « Claude Code l'a programmée. » à 3,2 s, « Au départ, je lui ai donné » à 4,6 s, la phrase sur Remotion à 6,1 s (« son compris » tombe sur le drop), « Ma part : relire et corriger. » à 10,1 s, « La même méthode, aux couleurs de la maison. » à 12,3 s, la question à 15,7 s, le nom à 18 s et la signature de 19 à 21,3 s. Les légendes des deux maquettes et la liste des cartes restent muettes, faute de place. La musique baisse d'environ 14 dB sous la voix.
-
+Voix ElevenLabs « Paul K », modèle eleven_v3, une seule prise jouée avec des indications d'émotion (enthousiaste, fier, chaleureux, curieux). « Remotion » est écrit « Rémotion » dans le texte lu pour forcer la prononciation. La prise est découpée en phrases dans ses silences, sans accélération, sauf 5 % sur l'accroche et la signature. Chaque phrase part sur l'image où son texte apparaît : l'accroche dès 0,05 s, « Claude Code l'a programmée. » à 3,3 s, la phrase sur Rémotion à 5,6 s (« son compris » tombe sur le drop), « Ma part : relire, et corriger. » à 10,1 s, « La même méthode, aux couleurs de la maison. » à 12,5 s, la question à 15,7 s, le nom à 18 s et la signature de 19,2 à 21,8 s. La liste des cartes et les légendes des deux maquettes restent muettes. La musique baisse d'environ 14 dB sous la voix.

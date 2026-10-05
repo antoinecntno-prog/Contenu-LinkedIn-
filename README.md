@@ -2,14 +2,14 @@
 
 ## Motion design : les coulisses de la vidéo de formation
 
-Film sonorisé de 21,5 s en 1080×1350 (4:5), 60 i/s, pour le post qui raconte comment la vidéo de formation a été programmée. Le film précédent y est incrusté directement depuis ses composants.
+Film sonorisé de 22 s en 1080×1350 (4:5), 60 i/s, pour le post qui raconte comment la vidéo de formation a été programmée. Le film précédent y est incrusté directement depuis ses composants.
 
 - Composition : `Coulisses` (avec flou de mouvement). `CO-SansFlou` sert aux aperçus rapides.
 - Code dans `src/coulisses/`, calage et couleurs dans `src/coulisses/constants.ts`.
 - Storyboard : `storyboard-coulisses.md`.
-- Film livré : `out/2026-10-05_coulisses-video-formation-ia-voix.mp4` (21,5 s, avec voix off). La version sans voix de 20 s reste dans `out/2026-10-02_coulisses-video-formation-ia.mp4`, elle correspond à l'état antérieur du code.
+- Film livré : `out/2026-10-05_coulisses-video-formation-ia-voix.mp4` (22 s, avec voix off). La version sans voix de 20 s reste dans `out/2026-10-02_coulisses-video-formation-ia.mp4`, elle correspond à l'état antérieur du code.
 
-Voix off : prise ElevenLabs de la voix « Paul K » (`public/voix/paulk-prise1.mp3`, modèle eleven_multilingual_v2). `scripts/audio/voix_coulisses.py` la découpe phrase par phrase, d'après la transcription mot à mot de la prise, et pose chaque phrase sur l'image où son texte apparaît. La musique baisse sous la voix.
+Voix off : prise ElevenLabs de la voix « Paul K » (`public/voix/paulk-v3-prise2.mp3`, modèle eleven_v3 avec indications d'émotion, « Rémotion » écrit avec un accent pour la prononciation). `scripts/audio/voix_coulisses.py` la découpe phrase par phrase, d'après les silences de la prise, et pose chaque phrase sur l'image où son texte apparaît. La musique baisse sous la voix.
 
 ```bash
 npx remotion render Coulisses muet.mp4 --codec=h264 --crf=16
