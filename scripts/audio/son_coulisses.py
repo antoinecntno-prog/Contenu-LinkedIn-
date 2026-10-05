@@ -1,6 +1,6 @@
 """Bande son du film « Coulisses » : musique et bruitages synthétisés, calés sur les images.
 
-Usage : python3 scripts/audio/son_coulisses.py <sortie.wav>
+Usage : python3 scripts/audio/son_coulisses.py <sortie.wav> [voix.wav]
 120 BPM en ré mineur : un temps toutes les 0,5 s (30 images), une mesure toutes les 2 s.
 Les instants sont donnés en images (60 i/s) et reprennent src/coulisses/constants.ts.
 Les instruments viennent de generer_son.py (film précédent).
@@ -36,7 +36,7 @@ from generer_son import (  # noqa: E402
     zap,
 )
 
-DUR = 20.0
+DUR = 21.5
 N = int(SR * DUR)
 FPS = 60
 rng = np.random.default_rng(11)
@@ -157,8 +157,8 @@ def musique():
     for i, f in enumerate(WORDS):
         add(post, kick(1.0), F(f), 0.9)
         add(post, bass(38 + [0, 0, 3, 5, 5, 7, 12][i], 0.3), F(f), 0.9)
-    add(post, pad([50, 57, 62, 65, 69, 74], 2.0), F(FINAL), 1.25)
-    add(post, bass(38, 1.6), F(FINAL), 1.0)
+    add(post, pad([50, 57, 62, 65, 69, 74], 3.5), F(FINAL), 1.25)
+    add(post, bass(38, 2.4), F(FINAL), 1.0)
     add(post, kick(1.2), F(FINAL), 1.0)
     return pre + quiet + post
 
@@ -169,13 +169,13 @@ def bruitages():
     s = np.zeros((N, 2))
     # 1. Accroche : frappe, sortie, brouillage, impact, plongée dans le « o »
     for i in range(31):
-        add(s, click(0.55, 2600 + 500 * (i % 3)), F(8 + i * 1.1), pan=-0.3 + 0.6 * (i / 31))
+        add(s, click(0.3, 2600 + 500 * (i % 3)), F(8 + i * 1.1), pan=-0.3 + 0.6 * (i / 31))
     add(s, whoosh(0.25, 600, 3000, 0.5), F(52))
     add(s, kick(0.7), F(54))
     for i in range(10):
-        add(s, glitch(0.05, 0.35, i), F(72 + i * 1.8), pan=0.4 if i % 2 else -0.4)
-    add(s, thud(1.3, 48), F(IMPACT_CODE))
-    add(s, sub_boom(0.9), F(IMPACT_CODE))
+        add(s, glitch(0.05, 0.2, i), F(72 + i * 1.8), pan=0.4 if i % 2 else -0.4)
+    add(s, thud(1.0, 48), F(IMPACT_CODE))
+    add(s, sub_boom(0.7), F(IMPACT_CODE))
     add(s, crash(0.5), F(IMPACT_CODE))
     add(s, riser(F(ZOOM[0] - 96), 0.45), F(96))
     add(s, whoosh(0.65, 200, 7000, 1.2), F(ZOOM[0] - 4))
@@ -265,15 +265,50 @@ def bruitages():
     return s
 
 
-def main(out):
+def lire_voix(path):
+    """Piste de voix off (voix_coulisses.py), en stéréo centrée."""
+    from scipy.io import wavfile
+
+    sr, v = wavfile.read(path)
+    assert sr == SR, "la voix doit être à 48 kHz"
+    v = v.astype(float) / 32768
+    out = np.zeros(N)
+    out[: min(N, len(v))] = v[:N]
+    return out
+
+
+def enveloppe(v, attaque=0.03, relache=0.35):
+    """Enveloppe lissée de la voix, de 0 à 1, pour baisser la musique dessous."""
+    e = np.abs(v)
+    e = filt(e, "low", 12)
+    e = np.clip(e / (np.percentile(e[e > 1e-4], 90) + 1e-9), 0, 1)
+    out = np.zeros_like(e)
+    a = np.exp(-1 / (attaque * SR))
+    r = np.exp(-1 / (relache * SR))
+    prev = 0.0
+    for i in range(0, len(e), 64):
+        x = e[i : i + 64].max()
+        prev = a * prev + (1 - a) * x if x > prev else r * prev + (1 - r) * x
+        out[i : i + 64] = prev
+    return np.clip(out * 1.6, 0, 1)
+
+
+def main(out, voix=None):
     mus = musique()
     sfx = bruitages()
     mus = reverb(mus, 1.4, 0.14)
     sfx = reverb(sfx, 0.8, 0.10)
-    mix = mus * 0.55 + sfx * 0.8
+    if voix:
+        v = lire_voix(voix)
+        env = enveloppe(v)[:, None]
+        # musique baissée d'environ 14 dB et bruitages de 7 dB pendant que la voix parle
+        mix = mus * 0.55 * (1 - 0.8 * env) + sfx * 0.8 * (1 - 0.55 * env)
+        mix += np.stack([v, v], axis=1) * 2.2
+    else:
+        mix = mus * 0.55 + sfx * 0.8
     # fondu de fin pour la boucle
     fade = np.ones(N)
-    a = int(19.2 * SR)
+    a = int((DUR - 0.8) * SR)
     fade[a:] = np.linspace(1, 0, N - a) ** 1.4
     mix *= fade[:, None]
     mix = np.tanh(mix * 1.1) * 0.9
@@ -286,4 +321,4 @@ def main(out):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)

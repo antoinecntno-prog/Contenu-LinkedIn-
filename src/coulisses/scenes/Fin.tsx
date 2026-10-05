@@ -91,7 +91,7 @@ export const Fin: React.FC = () => {
 
   // signature
   const camS = {
-    s: 1 + 0.03 * ip(g, [1080, 1200], [0, 1], EIO),
+    s: 1 + 0.03 * ip(g, [1080, 1290], [0, 1], EIO),
     x: drift(g, 51, 4) + shake(g, T.final, 14, 9, 9),
     y: drift(g, 52, 3) + shake(g, T.final, 14, 7, 10),
   };

@@ -1,6 +1,6 @@
 # Storyboard : les coulisses de la vidéo de formation
 
-Film de 20 s, 1080×1350 (4:5, fil LinkedIn sur mobile), 60 i/s, 1200 images. Composition Remotion `Coulisses`, code dans `src/coulisses/`. Il accompagne le post qui raconte comment le film `JourneeFormation` a été programmé par Claude Code.
+Film de 21,5 s, 1080×1350 (4:5, fil LinkedIn sur mobile), 60 i/s, 1290 images. Les 1,5 s finales tiennent la signature le temps que la voix off la dise. Composition Remotion `Coulisses`, code dans `src/coulisses/`. Il accompagne le post qui raconte comment le film `JourneeFormation` a été programmé par Claude Code.
 
 ## Règles communes
 
@@ -47,3 +47,8 @@ Le panneau bordeaux tombe, le « ? » reste et se déroule en trait ocre. Sur l'
 ## Son
 
 `scripts/audio/son_coulisses.py` synthétise musique et bruitages en ré mineur à 120 BPM, avec les instruments de `generer_son.py` : frappe au clavier, brouillage, impacts, chute des cartes, cliquetis du code, drop, coupes, arrêt de bande à la pause, stylo, tampon de validation, volets, mots de la question, moteur et freinage de la voiture.
+
+## Voix off
+
+Voix ElevenLabs « Paul K », une seule prise découpée en phrases et accélérée de 10 à 15 % sans changer la hauteur. Chaque phrase part sur l'image où son texte apparaît : l'accroche dès 0,05 s, « Claude Code l'a programmée. » à 3,2 s, « Au départ, je lui ai donné » à 4,6 s, la phrase sur Remotion à 6,1 s (« son compris » tombe sur le drop), « Ma part : relire et corriger. » à 10,1 s, « La même méthode, aux couleurs de la maison. » à 12,3 s, la question à 15,7 s, le nom à 18 s et la signature de 19 à 21,3 s. Les légendes des deux maquettes et la liste des cartes restent muettes, faute de place. La musique baisse d'environ 14 dB sous la voix.
+
