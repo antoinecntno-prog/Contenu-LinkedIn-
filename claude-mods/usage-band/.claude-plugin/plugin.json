@@ -1,0 +1,1 @@
+{ "name": "usage-band", "version": "0.1.0", "description": "Bandeau de consommation au-dessus du prompt : limites 5h et 7j, tokens, coût", "types": "./types/index.d.ts" }
